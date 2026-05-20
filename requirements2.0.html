@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>奉化“同山书院”在地文化数字共创平台 - 需求汇报演示</title>
+    <style>
+        :root {
+            --primary-color: #8c1c1c; /* 传统书院红 */
+            --secondary-color: #2c3e50; /* 深石青 */
+            --bg-color: #f7f5f0; /* 宣纸素色 */
+            --card-bg: #ffffff;
+            --text-color: #333333;
+            --accent-color: #b45309; /* 琥珀金 */
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans CJK SC", sans-serif;
+            background-color: #1a1a1a;
+            color: var(--text-color);
+            overflow: hidden;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* PPT 容器 */
+        .presentation-container {
+            width: 100vw;
+            height: 100vh;
+            max-width: 1920px;
+            max-height: 1080px;
+            background-color: var(--bg-color);
+            position: relative;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 50px 80px 40px 80px;
+            transition: all 0.3s ease;
+        }
+
+        /* 幻灯片样式 */
+        .slide {
+            display: none;
+            flex-direction: column;
+            height: 100%;
+            justify-content: flex-start;
+            overflow: hidden; /* 防止 slide 本身爆框 */
+            animation: fadeIn 0.4s ease-in-out;
+        }
+
+        .slide.active {
+            display: flex;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* 页眉与标题 */
+        .slide-header {
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 12px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            flex-shrink: 0; /* 确保头部不被压缩 */
+        }
+
+        .slide-title {
+            font-size: 2.3rem;
+            color: var(--primary-color);
+            font-weight: 700;
+        }
+
+        .slide-subtitle {
+            font-size: 1rem;
+            color: #666;
+            letter-spacing: 2px;
+        }
+
+        /* 核心内容区布局（关键修改：增加纵向滚动与优雅边距） */
+        .slide-content {
+            flex: 1;
+            font-size: 1.15rem;
+            line-height: 1.7;
+            color: #444;
+            overflow-y: auto; /* 纵向画幅撑爆时自动转换为内部滚动条 */
+            padding-right: 15px; /* 为滚动条留出呼吸空间 */
+            margin-bottom: 15px;
+        }
+
+        /* 定制宣纸国风精细滚动条 */
+        .slide-content::-webkit-scrollbar {
+            width: 6px;
+        }
+        .slide-content::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.03);
+            border-radius: 3px;
+        }
+        .slide-content::-webkit-scrollbar-thumb {
+            background: var(--primary-color);
+            border-radius: 3px;
+            opacity: 0.6;
+        }
+        .slide-content::-webkit-scrollbar-thumb:hover {
+            background: #6b1212;
+        }
+
+        /* 封面页特有样式 */
+        .cover-slide {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            height: 100%;
+            margin-top: -20px; /* 视觉微调，稍微下移 */
+        }
+
+        .cover-title {
+            font-size: 3.8rem;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            font-weight: 800;
+            letter-spacing: 3px;
+        }
+
+        .cover-badge {
+            background-color: var(--secondary-color);
+            color: white;
+            padding: 6px 16px;
+            font-size: 1.1rem;
+            border-radius: 4px;
+            margin-bottom: 30px;
+            display: inline-block;
+        }
+
+        .cover-meta {
+            margin-top: 40px;
+            font-size: 1.25rem;
+            color: #555;
+            line-height: 2;
+        }
+
+        /* 矩阵、网格与卡片组件 */
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 25px;
+            margin-top: 10px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-left: 5px solid var(--primary-color);
+            padding: 22px;
+            border-radius: 4px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.04);
+        }
+
+        .card h3 {
+            color: var(--secondary-color);
+            margin-bottom: 12px;
+            font-size: 1.4rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .badge-days {
+            background-color: var(--accent-color);
+            color: white;
+            font-size: 0.85rem;
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-weight: normal;
+        }
+
+        .card ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+
+        .card li {
+            margin-bottom: 8px;
+            position: relative;
+            padding-left: 18px;
+            font-size: 1.05rem;
+        }
+
+        .card li::before {
+            content: "•";
+            color: var(--primary-color);
+            font-weight: bold;
+            position: absolute;
+            left: 0;
+        }
+
+        /* 表格样式优化 */
+        .demand-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 5px;
+            background: #fff;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+        }
+
+        .demand-table th, .demand-table td {
+            padding: 14px 18px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+            font-size: 1.05rem;
+        }
+
+        .demand-table th {
+            background-color: var(--secondary-color);
+            color: white;
+            font-weight: 600;
+            position: sticky; /* 滚动时表格头部固定 */
+            top: 0;
+            z-index: 10;
+        }
+
+        .demand-table tr:hover {
+            background-color: #fcfbfa;
+        }
+
+        /* 底部导航栏 */
+        .presentation-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid #e0e0e0;
+            padding-top: 15px;
+            flex-shrink: 0; /* 确保页脚不被压缩 */
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 15px;
+        }
+
+        .btn {
+            background-color: var(--secondary-color);
+            color: white;
+            border: none;
+            padding: 10px 24px;
+            font-size: 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn:hover {
+            background-color: var(--primary-color);
+        }
+
+        .btn:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+
+        .progress-container {
+            flex: 1;
+            margin: 0 40px;
+            background-color: #e0e0e0;
+            height: 6px;
+            border-radius: 3px;
+            position: relative;
+        }
+
+        .progress-bar {
+            background-color: var(--primary-color);
+            height: 100%;
+            width: 16.6%;
+            border-radius: 3px;
+            transition: width 0.3s ease;
+        }
+
+        .page-indicator {
+            font-size: 1rem;
+            color: #666;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="presentation-container">
+
+        <div class="slide active" id="slide-1">
+            <div class="cover-slide">
+                <div class="cover-badge">奉化“同山书院”项目交付方案</div>
+                <h1 class="cover-title">在地文化数字共创平台</h1>
+                <h2>全周期业务需求说明与落地规划文档</h2>
+                <div class="cover-meta">
+                    <p><strong>汇报人：</strong>项目技术团队</p>
+                    <p><strong>核心架构：</strong>一库多端</p>
+                    <p><strong>时间：</strong>2026 年 5 月</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="slide" id="slide-2">
+            <div class="slide-header">
+                <div class="slide-title">总体建设路线：三步走演进战略</div>
+                <div class="slide-subtitle">Tongshan Academy • Roadmap</div>
+            </div>
+            <div class="slide-content" style="padding-top: 40px;">
+                <p style="margin-bottom: 30px; font-size: 1.25rem;">为降低政企项目演进风险、快速建立信任，项目整体采取<b>“离线先行、云端共创、商业闭环”</b>的三阶段敏捷落地模式：</p>
+                <div class="grid-3">
+                    <div class="card" style="border-left-color: #4b5563;">
+                        <h3>第一阶段：效果与离线屏显 <span class="badge-days">10人天</span></h3>
+                        <p style="font-size: 0.95rem; color:#666; margin-bottom: 10px;">纯线下环境交付，快速上线</p>
+                        <ul>
+                            <li>Windows 离线大屏机专属独立包</li>
+                            <li>Electron 本地沙箱离线隔离架构</li>
+                            <li>完成“开屏+5大主题+模糊检索”</li>
+                            <li>预埋图文音视频全要素多媒体素材</li>
+                        </ul>
+                    </div>
+                    <div class="card" style="border-left-color: var(--primary-color);">
+                        <h3>第二阶段：云端迁移与数字共创 <span class="badge-days">18人天</span></h3>
+                        <p style="font-size: 0.95rem; color:#666; margin-bottom: 10px;">打破孤岛，实现社会级协同</p>
+                        <ul>
+                            <li>迁移数据至阿里云(ECS+RDS+OSS)</li>
+                            <li>Spring Boot 3 + MyBatis-Plus</li>
+                            <li>微信小程序多角色(美协/学协等)登录</li>
+                            <li>创作者端 UGC 资源异步上传与流式审核</li>
+                        </ul>
+                    </div>
+                    <div class="card" style="border-left-color: var(--accent-color);">
+                        <h3>第三阶段：价值变现与文化生态 <span class="badge-days">15.5人天</span></h3>
+                        <p style="font-size: 0.95rem; color:#666; margin-bottom: 10px;">实现数据与商业闭环可持续运营</p>
+                        <ul>
+                            <li>积分账本与高并发防超卖库存事务机制</li>
+                            <li>小程序文创农特产商业微信支付商城</li>
+                            <li>大屏联网升级，引入交互核销二维码</li>
+                            <li>打通线上赚积分、线下兑好礼物理闭环</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="slide" id="slide-3">
+            <div class="slide-header">
+                <div class="slide-title">一阶段：线下离线全屏展示系统需求</div>
+                <div class="slide-subtitle">Phase 1 • Electron 独立可执行程序方案</div>
+            </div>
+            <div class="slide-content">
+                <table class="demand-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 12%">需求编码</th>
+                            <th style="width: 25%">细分功能名称</th>
+                            <th style="width: 50%">业务规则与业务描述</th>
+                            <th style="width: 13%">计划人天</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><b>F1.1</b></td>
+                            <td>离线运行环境与安装包打包</td>
+                            <td>采用 Electron 技术栈，将纯前端 Vue 3 系统编译封装为 Windows 环境下免配置双击直接运行的独立安装包（.exe）。</td>
+                            <td>1.5 人天</td>
+                        </tr>
+                        <tr>
+                            <td><b>F1.2</b></td>
+                            <td>全屏看门狗开屏欢迎页</td>
+                            <td>支持设定自动进入 Kiosk 屏显全屏模式。从本地相对路径读取图片执行滚动轮播，点击屏幕任意位置优雅淡入主界面。</td>
+                            <td>1.0 人天</td>
+                        </tr>
+                        <tr>
+                            <td><b>F1.3</b></td>
+                            <td>风格主题检索书册排版</td>
+                            <td>主界面采用“电子书册/画廊”排版风格。设立<b>水蜜桃、弥勒、民国、宋韵、非遗</b> 5 大主题入口网格。</td>
+                            <td>2.0 人天</td>
+                        </tr>
+                        <tr>
+                            <td><b>F1.4</b></td>
+                            <td>多媒体离线详情画廊与全屏放大</td>
+                            <td>点击特定主题跳转二级列表。支持再次点击素材触控全屏放大。集成高性能离线原生组件，支持图文、音频、高码率视频的独立流畅播放。</td>
+                            <td>2.5 人天</td>
+                        </tr>
+                        <tr>
+                            <td><b>F1.5</b></td>
+                            <td>本地内存级模糊搜索框</td>
+                            <td>在顶端常驻搜索框。支持输入作品名、作者名、风格标签。利用前端内存对预埋 JSON 数据进行秒级模糊匹配，并以列表框瀑布流展示结果。</td>
+                            <td>1.5 人天</td>
+                        </tr>
+                        <tr>
+                            <td><b>F1.6</b></td>
+                            <td>离线素材结构化预埋组织</td>
+                            <td>规范化大屏机本地静态存储路径。对非遗原始长视频、大图完成标准化转码和压缩。通过 data.json 预埋结构化演示资产。</td>
+                            <td>1.5 人天</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="slide" id="slide-4">
+            <div class="slide-header">
+                <div class="slide-title">二阶段：云端迁移、后台管理与共创小程序</div>
+                <div class="slide-subtitle">Phase 2 • 云端数字底座与 UGC 协同协同</div>
+            </div>
+            <div class="slide-content">
+                <table class="demand-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 12%">需求编码</th>
+                            <th style="width: 25%">细分功能名称</th>
+                            <th style="width: 50%">业务规则与业务描述</th>
+                            <th style="width: 13%">计划人天</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><b>F2.1</b></td>
+                            <td>阿里云基础设施搭建与联调</td>
+                            <td>采购并配置华东节点 ECS 算力源、内网直连 RDS MySQL 数据库及公共互联网去中心化对象存储 OSS。完成 HTTPS 证书绑定。</td>
+                            <td>2.0 人天</td>
+                        </tr>
+                        <tr>
+                            <td><b>F2.2</b></td>
+                            <td>Java 核心后台架构设计</td>
+                            <td>基于企业级 Spring Boot 3 + MyBatis-Plus。设计文化资源全生命周期资产表、组织权限RBAC模型。产出大屏与小程序共用的标准 RESTful API。</td>
+                            <td>3.5 人天</td>
+                        </tr>
+                        <tr>
+                            <td><b>F2.3</b></td>
+                            <td>书院资产 CMS 后台管理</td>
+                            <td>提供给书院管理员的数据维护后台。包含资源增删改查；支持多媒体文件直传阿里云 OSS。主页展示资源存储总量与分类统计大屏看板。</td>
+                            <td>4.0 人天</td>
+                        </tr>
+                        <tr>
+                            <td><b>F2.4</b></td>
+                            <td>多角色微信授权认证体系</td>
+                            <td>微信小程序对接原生生态登录。在系统内部划分：<b>美协、书协、作协、在地艺术家、在校学生</b>等不同共创权限组。</td>
+                            <td>2.5 人天</td>
+                        </tr>
+                        <tr>
+                            <td><b>F2.5</b></td>
+                            <td>小程序移动端文化多维查询</td>
+                            <td>复刻一阶段大屏的检索逻辑至移动端，适配手机单手触控、列表上拉加载、下拉刷新以及检索词防抖（Debounce）处理。</td>
+                            <td>2.5 人天</td>
+                        </tr>
+                        <tr>
+                            <td><b>F2.6</b></td>
+                            <td>UGC 在地共创移动端投稿</td>
+                            <td>共创核心。各协会成员或学生可通过小程序直接撰写描述、打风格标签、并上传拍摄的非遗视频/音视频至云存储，状态默认置为“待审核”。</td>
+                            <td>3.5 人天</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="slide" id="slide-5">
+            <div class="slide-header">
+                <div class="slide-title">三阶段：积分商城与文化生态变现</div>
+                <div class="slide-subtitle">Phase 3 • 微信支付电商与线下联动核销</div>
+            </div>
+            <div class="slide-content">
+                <table class="demand-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 12%">需求编码</th>
+                            <th style="width: 25%">细分功能名称</th>
+                            <th style="width: 50%">业务规则与业务描述</th>
+                            <th style="width: 13%">计划人天</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><b>F3.1</b></td>
+                            <td>交易安全底座与积分账本</td>
+                            <td>设计严格的积分扣减、商品库存冻结机制。采用数据库行锁或 Redis 分布式锁，确保并发场景下（如抢兑活动）绝对不发生“超卖”和乱账。</td>
+                            <td>3.0 人天</td>
+                        </tr>
+                        <tr>
+                            <td><b>F3.2</b></td>
+                            <td>微信支付文创及农特产商城</td>
+                            <td>开通微信支付企业商户。小程序端上线书院文创产品、奉化水蜜桃特产等实体/电子版权商城，打通微信原生安全支付闭环。费率按官方 0.6% 结算。</td>
+                            <td>4.0 人天</td>
+                        </tr>
+                        <tr>
+                            <td><b>F3.3</b></td>
+                            <td>用户积分任务与权益商城</td>
+                            <td>用户通过共创投稿被采纳、每日打卡等获得积分。设立专门的“积分兑换区”，消耗积分可兑换书院线下实体小礼品，兑换成功生成专用加密核销二维码。</td>
+                            <td>2.5 人天</td>
+                        </tr>
+                        <tr>
+                            <td><b>F3.4</b></td>
+                            <td>线下大屏联网升级与扫码联动</td>
+                            <td>一阶段大屏机接入网络，升级增加“扫码联动”板块。大屏实时拉取云端礼品池。游客在屏幕点击兑换，大屏展现对应二维码，用户用小程序扫码完成扣点。</td>
+                            <td>3.5 人天</td>
+                        </tr>
+                        <tr>
+                            <td><b>F3.5</b></td>
+                            <td>订单流转与账目审计系统</td>
+                            <td>后台提供完整的订单发货流程追踪、线上真实支付对账单下载、线下大屏核销网点流水审计，保障资金流与资产物流合规。</td>
+                            <td>2.5 人天</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="slide" id="slide-6">
+            <div class="slide-header">
+                <div class="slide-title">工时汇总与软硬件财务预算建议</div>
+                <div class="slide-subtitle">Summary • Budget & Estimate</div>
+            </div>
+            <div class="slide-content">
+                <div class="grid-3">
+                    <div class="card" style="border-left-color: var(--primary-color);">
+                        <h3>总体工时科学盘点</h3>
+                        <ul>
+                            <li><b>一阶段（离线大屏）</b>：10.0 人天</li>
+                            <li><b>二阶段（数字共创）</b>：18.0 人天</li>
+                            <li><b>三阶段（变现商城）</b>：15.5 人天</li>
+                            <li><b>集成测试与UAT交付</b>：5.5 人天</li>
+                            <li><span style="color:var(--primary-color); font-weight: bold;">项目综合评估总计：50.0 人天</span></li>
+                        </ul>
+                    </div>
+                    <div class="card" style="border-left-color: var(--secondary-color);">
+                        <h3>阿里云硬性资源预估（人民币）</h3>
+                        <ul>
+                            <li><b>ECS服务器 (2c4g 5M)</b>：首年 ¥199（次年恢复原价约 ¥1200）</li>
+                            <li><b>RDS数据库 (1c2g单机)</b>：首年 ¥88（次年恢复原价约 ¥350）</li>
+                            <li><b>OSS存储包 (100GB)</b>：固定 ¥99 / 年</li>
+                            <li><b>域名与安全配置</b>：约 ¥80 / 年（免费开通微信HTTPS）</li>
+                            <li><span style="color:var(--secondary-color); font-weight: bold;">首年云端综合开销控制在 500 元内</span></li>
+                        </ul>
+                    </div>
+                    <div class="card" style="border-left-color: var(--accent-color);">
+                        <h3>微信官方及商务红线提示</h3>
+                        <ul>
+                            <li><b>微信主体认证费</b>：¥300 / 年（企业主体硬性收取）</li>
+                            <li><b>微信支付通道费</b>：普通商户实物交易固定每笔扣除 0.6%</li>
+                            <li><b>商务收款机制</b>：资金由腾讯直接结算至客户对公账户，开发方不产生财务留存流风险</li>
+                            <li><span style="color:var(--accent-color); font-weight: bold;">建议对外标准商务报价：¥68,000 ~ ¥88,000</span></li>
+                        </ul>
+                    </div>
+                </div>
+                <div style="margin-top: 25px; background: #eae6df; padding: 15px; border-radius: 4px; font-size: 1.1rem; border-left: 5px solid var(--accent-color);">
+                    <b>技术架构交接提示：</b>一阶段通过将纯前端打包进 <b>Electron 沙箱</b>，完全切断了外部网络依赖。后续过渡到二三阶段时，原大屏核心 UI 组件可由 AI 工具无缝移植到云端，避免发生推倒重来的重构成本。
+                </div>
+            </div>
+        </div>
+
+        <div class="presentation-footer">
+            <div class="page-indicator" id="pageIndicator">第 1 / 6 页</div>
+            <div class="progress-container">
+                <div class="progress-bar" id="progressBar"></div>
+            </div>
+            <div class="nav-buttons">
+                <button class="btn" id="prevBtn" onclick="changeSlide(-1)">上一页</button>
+                <button class="btn" id="nextBtn" onclick="changeSlide(1)">下一页</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentSlide = 1;
+        const totalSlides = 6;
+
+        function updatePresentation() {
+            // 切换 Slide 显隐
+            document.querySelectorAll('.slide').forEach(slide => {
+                slide.classList.remove('active');
+            });
+            document.getElementById(`slide-${currentSlide}`).classList.add('active');
+
+            // 更新页码指示器
+            document.getElementById('pageIndicator').innerText = `第 ${currentSlide} / ${totalSlides} 页`;
+
+            // 更新进度条
+            const progressPercent = (currentSlide / totalSlides) * 100;
+            document.getElementById('progressBar').style.width = `${progressPercent}%`;
+
+            // 按钮状态控制
+            document.getElementById('prevBtn').disabled = (currentSlide === 1);
+            document.getElementById('nextBtn').disabled = (currentSlide === totalSlides);
+        }
+
+        function changeSlide(direction) {
+            currentSlide += direction;
+            if (currentSlide < 1) currentSlide = 1;
+            if (currentSlide > totalSlides) currentSlide = totalSlides;
+            updatePresentation();
+        }
+
+        // 绑定键盘左右方向键事件
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'ArrowLeft') {
+                changeSlide(-1);
+            } else if (event.key === 'ArrowRight') {
+                changeSlide(1);
+            }
+        });
+
+        // 初始化显示
+        updatePresentation();
+    </script>
+</body>
+</html>
