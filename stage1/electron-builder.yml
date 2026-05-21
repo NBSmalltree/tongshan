@@ -6,10 +6,14 @@ directories:
   buildResources: build
   output: dist-release
 
-# 将离线静态资源打包到安装目录 resources/static/ 下
+# 将离线资源打包到安装目录 resources/ 下
 extraResources:
   - from: "static"
     to: "static"
+    filter:
+      - "**/*"
+  - from: "resources"
+    to: "resources"
     filter:
       - "**/*"
 

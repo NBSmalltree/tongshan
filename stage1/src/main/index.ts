@@ -53,13 +53,20 @@ function getStaticPath(): string {
   return join(app.getAppPath(), 'static')
 }
 
+function getResourcesPath(): string {
+  if (app.isPackaged) {
+    return join(process.resourcesPath, 'resources')
+  }
+  return join(app.getAppPath(), 'resources')
+}
+
 function registerIpcHandlers(): void {
   ipcMain.handle('get-static-path', () => {
     return getStaticPath()
   })
 
   ipcMain.handle('read-data-json', () => {
-    const dataPath = join(getStaticPath(), 'data.json')
+    const dataPath = join(getResourcesPath(), 'data.json')
     if (existsSync(dataPath)) {
       const raw = readFileSync(dataPath, 'utf-8')
       return JSON.parse(raw)
@@ -68,10 +75,13 @@ function registerIpcHandlers(): void {
   })
 
   ipcMain.handle('resolve-asset', (_, relativePath: string) => {
-    const staticPath = getStaticPath()
-    const fullPath = join(staticPath, relativePath)
-    if (existsSync(fullPath)) {
-      return `file://${fullPath}`
+    const resourcesFullPath = join(getResourcesPath(), relativePath)
+    if (existsSync(resourcesFullPath)) {
+      return `file://${resourcesFullPath}`
+    }
+    const staticFullPath = join(getStaticPath(), relativePath)
+    if (existsSync(staticFullPath)) {
+      return `file://${staticFullPath}`
     }
     return ''
   })
