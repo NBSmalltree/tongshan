@@ -4,17 +4,71 @@ import { existsSync, readFileSync } from 'fs'
 
 let mainWindow: BrowserWindow | null = null
 
+interface AppConfig {
+  width?: number
+  height?: number
+  resolution?: string
+  kiosk?: boolean
+  fullscreen?: boolean
+}
+
+// 清洗 JSON 字符串中的 // 与 /* ... */ 注释，避免 JSON.parse 解析异常
+function cleanJsonComments(raw: string): string {
+  return raw.replace(/\\"|"(?:\\"|[^"])*"|(\/\/.*|\/\*[\s\S]*?\*\/)/g, (m, g) => g ? "" : m)
+}
+
+// 动态加载 resources/config.json 并解析分辨率和窗口锁定参数
+function loadConfig(): { width: number; height: number; kiosk: boolean; fullscreen: boolean } {
+  const defaultConfig = { width: 1920, height: 1080, kiosk: true, fullscreen: true }
+  try {
+    const configPath = join(getResourcesPath(), 'config.json')
+    if (existsSync(configPath)) {
+      const raw = readFileSync(configPath, 'utf-8')
+      const cleanRaw = cleanJsonComments(raw)
+      const config: AppConfig = JSON.parse(cleanRaw)
+      
+      let width = config.width
+      let height = config.height
+      const kiosk = config.kiosk !== undefined ? config.kiosk : true
+      const fullscreen = config.fullscreen !== undefined ? config.fullscreen : true
+      
+      // 若未设置具体的 width/height，则尝试从 resolution 中正则提取（支持 x、X、* 符号）
+      if (!width || !height) {
+        if (config.resolution) {
+          const match = config.resolution.match(/^(\d+)[xX*](\d+)$/)
+          if (match) {
+            width = parseInt(match[1], 10)
+            height = parseInt(match[2], 10)
+          }
+        }
+      }
+      
+      return {
+        width: width || 1920,
+        height: height || 1080,
+        kiosk,
+        fullscreen
+      }
+    }
+  } catch (err) {
+    console.error('读取或解析 resources/config.json 配置文件失败，将采用默认配置。', err)
+  }
+  return defaultConfig
+}
+
 function createWindow(): void {
+  const { width, height, kiosk, fullscreen } = loadConfig()
+
   mainWindow = new BrowserWindow({
-    width: 1920,
-    height: 1080,
-    kiosk: true,
-    fullscreen: true,
-    frame: false,
+    width: width,
+    height: height,
+    kiosk: kiosk,
+    fullscreen: fullscreen,
+    frame: !kiosk && !fullscreen, // 调试模式下显示边框
     autoHideMenuBar: true,
-    resizable: false,
-    alwaysOnTop: true,
-    skipTaskbar: true,
+    resizable: !kiosk && !fullscreen, // 调试模式下允许拉伸缩放
+    alwaysOnTop: kiosk,
+    skipTaskbar: kiosk,
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
       contextIsolation: true,
@@ -70,6 +124,16 @@ function registerIpcHandlers(): void {
     if (existsSync(dataPath)) {
       const raw = readFileSync(dataPath, 'utf-8')
       return JSON.parse(raw)
+    }
+    return null
+  })
+
+  ipcMain.handle('read-config-json', () => {
+    const configPath = join(getResourcesPath(), 'config.json')
+    if (existsSync(configPath)) {
+      const raw = readFileSync(configPath, 'utf-8')
+      const cleanRaw = cleanJsonComments(raw)
+      return JSON.parse(cleanRaw)
     }
     return null
   })
