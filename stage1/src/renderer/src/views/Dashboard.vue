@@ -86,8 +86,4 @@ function goToTheme(themeName: string) {
   width: 100%;
 }
 
-.themes-grid > *:nth-child(4),
-.themes-grid > *:nth-child(5) {
-  /* center the last two cards */
-}
 </style>
