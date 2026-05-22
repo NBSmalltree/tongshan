@@ -1,7 +1,7 @@
 <template>
   <div class="dashboard">
     <header class="dashboard-header">
-      <h1>奉化 · 在地文化数字共创平台</h1>
+      <h1 class="clickable-title" @click="goHome">奉化 · 在地文化数字共创平台</h1>
     </header>
 
     <main class="dashboard-content">
@@ -38,6 +38,10 @@ const appStore = useAppStore()
 
 const themes = computed(() => dataStore.themes)
 
+function goHome() {
+  router.push('/')
+}
+
 function goToTheme(themeName: string) {
   appStore.currentTheme = themeName
   router.push(`/theme/${themeName}`)
@@ -67,6 +71,10 @@ function goToTheme(themeName: string) {
   font-weight: 600;
   letter-spacing: 4px;
   color: var(--color-text);
+}
+
+.clickable-title {
+  cursor: pointer;
 }
 
 .dashboard-content {
