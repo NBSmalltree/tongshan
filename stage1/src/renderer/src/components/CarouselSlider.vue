@@ -50,7 +50,7 @@ function stopAutoplay() {
   }
 }
 
-watch(() => props.images, () => {
+watch(() => props.images.length, () => {
   currentIndex.value = 0
   startAutoplay()
 })

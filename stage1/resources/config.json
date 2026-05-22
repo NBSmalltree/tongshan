@@ -1,5 +1,5 @@
 {
   "resolution": "1920x1080",
-  "kiosk": true,
+  "kiosk": false,
   "fullscreen": true
 }

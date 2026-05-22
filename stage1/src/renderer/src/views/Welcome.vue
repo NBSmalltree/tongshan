@@ -27,8 +27,8 @@ let exitTapCount = 0
 let exitTapTimer: ReturnType<typeof setTimeout> | null = null
 
 onMounted(async () => {
-  for (let i = 1; i <= 5; i++) {
-    const url = await resolveAssetUrl(`images/welcome/slide${i}.jpg`)
+  for (let i = 1; i <= 4; i++) {
+    const url = await resolveAssetUrl(`images/welcome/slide${i}.png`)
     if (url) welcomeImages.value.push(url)
   }
   if (welcomeImages.value.length === 0) {

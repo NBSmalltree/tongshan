@@ -1,8 +1,12 @@
-import { app, shell, BrowserWindow, ipcMain, globalShortcut } from 'electron'
+import { app, shell, BrowserWindow, ipcMain, globalShortcut, protocol, net } from 'electron'
 import { join } from 'path'
 import { existsSync, readFileSync } from 'fs'
 
 let mainWindow: BrowserWindow | null = null
+
+protocol.registerSchemesAsPrivileged([
+  { scheme: 'static', privileges: { standard: true, secure: true, supportFetchAPI: true } }
+])
 
 interface AppConfig {
   width?: number
@@ -114,6 +118,21 @@ function getResourcesPath(): string {
   return join(app.getAppPath(), 'resources')
 }
 
+function registerStaticProtocol(): void {
+  protocol.handle('static', (request) => {
+    const relativePath = request.url.replace('static://', '')
+    const resourcesFullPath = join(getResourcesPath(), relativePath)
+    if (existsSync(resourcesFullPath)) {
+      return net.fetch(`file://${resourcesFullPath}`)
+    }
+    const staticFullPath = join(getStaticPath(), relativePath)
+    if (existsSync(staticFullPath)) {
+      return net.fetch(`file://${staticFullPath}`)
+    }
+    return new Response('Not Found', { status: 404 })
+  })
+}
+
 function registerIpcHandlers(): void {
   ipcMain.handle('get-static-path', () => {
     return getStaticPath()
@@ -141,11 +160,11 @@ function registerIpcHandlers(): void {
   ipcMain.handle('resolve-asset', (_, relativePath: string) => {
     const resourcesFullPath = join(getResourcesPath(), relativePath)
     if (existsSync(resourcesFullPath)) {
-      return `file://${resourcesFullPath}`
+      return `static://${relativePath}`
     }
     const staticFullPath = join(getStaticPath(), relativePath)
     if (existsSync(staticFullPath)) {
-      return `file://${staticFullPath}`
+      return `static://${relativePath}`
     }
     return ''
   })
@@ -165,6 +184,7 @@ function registerShortcuts(): void {
 }
 
 app.whenReady().then(() => {
+  registerStaticProtocol()
   registerIpcHandlers()
   registerShortcuts()
   createWindow()
