@@ -1,5 +1,5 @@
 <template>
-  <div class="dashboard">
+  <div class="dashboard" :style="{ backgroundImage: bgUrl ? `url(${bgUrl})` : '' }">
     <header class="dashboard-header">
       <h1 class="clickable-title" @click="goHome">奉化 · 在地文化数字共创平台</h1>
     </header>
@@ -24,10 +24,11 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useDataStore } from '../stores/dataStore'
 import { useAppStore } from '../stores/appStore'
+import { useStaticPath } from '../composables/useStaticPath'
 import ThemeCard from '../components/ThemeCard.vue'
 import SearchBar from '../components/SearchBar.vue'
 import SearchResults from '../components/SearchResults.vue'
@@ -35,6 +36,12 @@ import SearchResults from '../components/SearchResults.vue'
 const router = useRouter()
 const dataStore = useDataStore()
 const appStore = useAppStore()
+const { resolveAssetUrl } = useStaticPath()
+const bgUrl = ref('')
+
+onMounted(async () => {
+  bgUrl.value = await resolveAssetUrl('images/background/bg1.png')
+})
 
 const themes = computed(() => dataStore.themes)
 
@@ -55,6 +62,8 @@ function goToTheme(themeName: string) {
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  background-size: cover;
+  background-position: center;
 }
 
 .dashboard-header {

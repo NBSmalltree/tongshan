@@ -1,5 +1,5 @@
 <template>
-  <div class="theme-list">
+  <div class="theme-list" :style="{ backgroundImage: bgUrl ? `url(${bgUrl})` : '' }">
     <header class="theme-list-header">
       <nav class="breadcrumb">
         <span class="breadcrumb-link" @click="goBack">首页</span>
@@ -33,10 +33,11 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useDataStore } from '../stores/dataStore'
 import { useAppStore } from '../stores/appStore'
+import { useStaticPath } from '../composables/useStaticPath'
 import MaterialCard from '../components/MaterialCard.vue'
 import SearchBar from '../components/SearchBar.vue'
 import SearchResults from '../components/SearchResults.vue'
@@ -45,6 +46,12 @@ const route = useRoute()
 const router = useRouter()
 const dataStore = useDataStore()
 const appStore = useAppStore()
+const { resolveAssetUrl } = useStaticPath()
+const bgUrl = ref('')
+
+onMounted(async () => {
+  bgUrl.value = await resolveAssetUrl('images/background/bg1.png')
+})
 
 const themeName = computed(() => route.params.themeName as string)
 
@@ -72,6 +79,8 @@ function goToDetail(id: string) {
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  background-size: cover;
+  background-position: center;
 }
 
 .theme-list-header {
