@@ -296,8 +296,7 @@ function goToDetail(id: string) {
   flex: 1;
   display: flex;
   flex-direction: column;
-  justify-content: flex-start; /* 关键修改：由原来的居中对齐改为顶部靠拢 */
-  padding-top: 15px;            /* 精确拉近主体内容框与上方大标题的视觉距离 */
+  justify-content: center; /* 垂直居中：内容在标题与搜索栏之间 */
   position: relative;
   overflow: hidden;
 }
