@@ -176,11 +176,11 @@ function handlePointerDown(e: PointerEvent) {
   startX = e.clientX
   startScrollLeft = swiperRef.value.scrollLeft
   swiperRef.value.style.scrollBehavior = 'auto'
-  swiperRef.value.setPointerCapture(e.pointerId)
 }
 
 function handlePointerMove(e: PointerEvent) {
   if (!isDragging.value || !swiperRef.value) return
+  swiperRef.value.setPointerCapture(e.pointerId)
   const deltaX = e.clientX - startX
 
   if (maxScrollLeft.value > 0) {
