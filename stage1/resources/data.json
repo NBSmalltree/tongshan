@@ -38,7 +38,7 @@
       "title": "奉化水蜜桃的传说",
       "author": "张明远",
       "type": "text",
-      "cover": "images/covers/sm-001.jpg",
+      "cover": "images/covers/sm-001.jpeg",
       "content": "相传南宋时期，奉化就有种植水蜜桃的传统。溪口镇一带气候温和、土壤肥沃，特别适合桃树生长。历经千年培育，奉化水蜜桃以其皮薄肉厚、汁多味甜而闻名遐迩，被誉为'中国之最'。\n\n每年六七月份，漫山遍野的桃花过后便是累累硕果。桃农们世代相传的种植技艺，让每一颗水蜜桃都饱含着匠心与自然的馈赠。",
       "tags": ["水蜜桃", "传说", "南宋", "溪口"]
     },
@@ -48,8 +48,8 @@
       "title": "桃园四季",
       "author": "李晓华",
       "type": "image",
-      "cover": "images/covers/sm-002.jpg",
-      "content": "images/materials/sm-002.jpg",
+      "cover": "images/covers/sm-002.jpeg",
+      "content": "images/materials/sm-002.jpeg",
       "tags": ["水蜜桃", "桃园", "四季", "风光"]
     },
     {
@@ -58,7 +58,7 @@
       "title": "蜜桃采摘季",
       "author": "王建国",
       "type": "video",
-      "cover": "images/covers/sm-003.jpg",
+      "cover": "images/covers/sm-003.jpeg",
       "content": "videos/sm-003.mp4",
       "tags": ["水蜜桃", "采摘", "丰收"]
     },
@@ -68,8 +68,8 @@
       "title": "雪窦山弥勒大佛",
       "author": "陈德明",
       "type": "image",
-      "cover": "images/covers/ml-001.jpg",
-      "content": "images/materials/ml-001.jpg",
+      "cover": "images/covers/ml-001.jpeg",
+      "content": "images/materials/ml-001.jpeg",
       "tags": ["弥勒", "雪窦山", "大佛", "佛教"]
     },
     {
@@ -78,7 +78,7 @@
       "title": "布袋和尚的传说",
       "author": "刘文静",
       "type": "text",
-      "cover": "images/covers/ml-002.jpg",
+      "cover": "images/covers/ml-002.jpeg",
       "content": "五代后梁时期，奉化出了位奇僧——布袋和尚。他身形矮胖，笑口常开，终日背着一个大布袋云游四方，逢人便化缘，所得之物又随手分给穷人。\n\n布袋和尚常在雪窦寺弘法，留下'布袋歌'等禅诗。圆寂前留下偈语：'弥勒真弥勒，分身千百亿，时时示时人，时人自不识。'后人便认为他是弥勒菩萨的化身，奉化也因此被称为弥勒圣地。",
       "tags": ["弥勒", "布袋和尚", "雪窦寺", "传说"]
     },
@@ -88,7 +88,7 @@
       "title": "雪窦寺晨钟暮鼓",
       "author": "赵宇飞",
       "type": "audio",
-      "cover": "images/covers/ml-003.jpg",
+      "cover": "images/covers/ml-003.jpeg",
       "content": "audios/ml-003.mp3",
       "tags": ["弥勒", "雪窦寺", "钟声", "禅意"]
     },
@@ -98,8 +98,8 @@
       "title": "溪口民国建筑群",
       "author": "钱学文",
       "type": "image",
-      "cover": "images/covers/mg-001.jpg",
-      "content": "images/materials/mg-001.jpg",
+      "cover": "images/covers/mg-001.jpeg",
+      "content": "images/materials/mg-001.jpeg",
       "tags": ["民国", "溪口", "建筑", "历史"]
     },
     {
@@ -108,7 +108,7 @@
       "title": "蒋氏故居往事",
       "author": "孙雅琴",
       "type": "text",
-      "cover": "images/covers/mg-002.jpg",
+      "cover": "images/covers/mg-002.jpeg",
       "content": "溪口镇上的丰镐房、文昌阁、小洋房等建筑，见证了民国时期的历史风云。这些中西合璧的建筑，既保留了浙东民居的特色，又融入了西洋建筑的元素。\n\n走在溪口老街上，仿佛穿越回了那个风云变幻的年代。每一处建筑都在诉说着属于它的故事，承载着一段段不可忘却的记忆。",
       "tags": ["民国", "溪口", "蒋氏故居", "历史"]
     },
@@ -118,7 +118,7 @@
       "title": "民国街巷记忆",
       "author": "周伟杰",
       "type": "video",
-      "cover": "images/covers/mg-003.jpg",
+      "cover": "images/covers/mg-003.jpeg",
       "content": "videos/mg-003.mp4",
       "tags": ["民国", "街巷", "记忆", "老街"]
     },
@@ -128,7 +128,7 @@
       "title": "宋韵奉化",
       "author": "吴清雅",
       "type": "text",
-      "cover": "images/covers/sy-001.jpg",
+      "cover": "images/covers/sy-001.jpeg",
       "content": "南宋时期，奉化文风鼎盛，书院林立。吸引了四方学子前来求学问道。\n\n宋代的奉化，不仅有深厚的文化底蕴，还有精美的手工艺品。越窑青瓷从这里走向世界，诗词歌赋在这里代代相传。这种雅致的文化气质，至今仍流淌在奉化的山水之间。",
       "tags": ["宋韵", "书院", "文化", "越窑"]
     },
@@ -138,8 +138,8 @@
       "title": "青瓷之美",
       "author": "郑海涛",
       "type": "image",
-      "cover": "images/covers/sy-002.jpg",
-      "content": "images/materials/sy-002.jpg",
+      "cover": "images/covers/sy-002.jpeg",
+      "content": "images/materials/sy-002.jpeg",
       "tags": ["宋韵", "青瓷", "越窑", "工艺"]
     },
     {
@@ -148,7 +148,7 @@
       "title": "宋式点茶",
       "author": "冯雅芝",
       "type": "video",
-      "cover": "images/covers/sy-003.jpg",
+      "cover": "images/covers/sy-003.jpeg",
       "content": "videos/sy-003.mp4",
       "tags": ["宋韵", "点茶", "茶道", "文化"]
     },
@@ -158,7 +158,7 @@
       "title": "奉化布龙",
       "author": "朱国强",
       "type": "video",
-      "cover": "images/covers/fy-001.jpg",
+      "cover": "images/covers/fy-001.jpeg",
       "content": "videos/fy-001.mp4",
       "tags": ["非遗", "布龙", "龙舞", "民俗"]
     },
@@ -168,7 +168,7 @@
       "title": "竹编技艺",
       "author": "林秀芳",
       "type": "text",
-      "cover": "images/covers/fy-002.jpg",
+      "cover": "images/covers/fy-002.jpeg",
       "content": "奉化竹编是浙江省非物质文化遗产之一。竹编艺人以本地盛产的毛竹为原料，经过锯竹、卷节、剖竹、刮青、劈篾、劈丝等数十道工序，将竹材加工成纤细如丝的竹篾。\n\n再通过挑压交织、经纬编织等技法，编织出各种精美的竹器。从日常用具到艺术珍品，每一件竹编作品都凝聚着匠人的智慧与心血。",
       "tags": ["非遗", "竹编", "手工", "技艺"]
     },
@@ -178,19 +178,9 @@
       "title": "千层饼制作",
       "author": "黄志明",
       "type": "image",
-      "cover": "images/covers/fy-003.jpg",
+      "cover": "images/covers/fy-003.jpeg",
       "content": "images/materials/fy-003.jpg",
       "tags": ["非遗", "千层饼", "美食", "溪口"]
-    },
-    {
-      "id": "fy-004",
-      "theme": "feiyi",
-      "title": "走书唱腔",
-      "author": "徐丽华",
-      "type": "audio",
-      "cover": "images/covers/fy-004.jpg",
-      "content": "audios/fy-004.mp3",
-      "tags": ["非遗", "走书", "曲艺", "唱腔"]
     }
   ]
 }
