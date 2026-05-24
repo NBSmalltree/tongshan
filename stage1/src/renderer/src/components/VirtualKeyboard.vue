@@ -10,7 +10,6 @@
       
       <button
         v-for="(cand, i) in paginatedCandidates"
-        v-for="(cand, i) in paginatedCandidates"
         :key="i"
         class="pinyin-candidate"
         @click="selectCandidate(cand)"
@@ -64,22 +63,6 @@ const { getPinyinCandidates } = usePinyin()
 
 const candidates = ref<string[]>([])
 const layoutMode = ref<'lower' | 'upper' | 'number'>('lower')
-
-const page = ref(0)
-const pageSize = 5
-
-const paginatedCandidates = computed(() => {
-  const start = page.value * pageSize
-  return candidates.value.slice(start, start + pageSize)
-})
-
-function prevPage() {
-  if (page.value > 0) page.value--
-}
-
-function nextPage() {
-  if ((page.value + 1) * pageSize < candidates.value.length) page.value++
-}
 
 const page = ref(0)
 const pageSize = 5
