@@ -2,14 +2,19 @@
   <div class="keyboard-container" :class="{ visible }">
     <div class="pinyin-candidates" v-if="appStore.pinyinBuffer.length > 0 || candidates.length > 0">
       <div class="pinyin-buffer">{{ appStore.pinyinBuffer }}</div>
+      
+      <button class="nav-btn" @click="prevPage" v-if="candidates.length > pageSize">❮</button>
+      
       <button
-        v-for="(cand, i) in candidates"
+        v-for="(cand, i) in paginatedCandidates"
         :key="i"
         class="pinyin-candidate"
         @click="selectCandidate(cand)"
       >
         {{ cand }}
       </button>
+
+      <button class="nav-btn" @click="nextPage" v-if="(page + 1) * pageSize < candidates.length">❯</button>
     </div>
 
     <div class="keyboard-layout">
@@ -52,6 +57,22 @@ const { getPinyinCandidates } = usePinyin()
 const candidates = ref<string[]>([])
 const layoutMode = ref<'lower' | 'upper' | 'number'>('lower')
 
+const page = ref(0)
+const pageSize = 5
+
+const paginatedCandidates = computed(() => {
+  const start = page.value * pageSize
+  return candidates.value.slice(start, start + pageSize)
+})
+
+function prevPage() {
+  if (page.value > 0) page.value--
+}
+
+function nextPage() {
+  if ((page.value + 1) * pageSize < candidates.value.length) page.value++
+}
+
 // 监听拼音缓存变化，更新候选词
 watch(() => appStore.pinyinBuffer, (val) => {
   if (val.length === 0) {
@@ -59,6 +80,7 @@ watch(() => appStore.pinyinBuffer, (val) => {
   } else {
     candidates.value = getPinyinCandidates(val)
   }
+  page.value = 0
 }, { immediate: true })
 
 const lowerLayout: string[][] = [
@@ -67,6 +89,7 @@ const lowerLayout: string[][] = [
   ['⇧', 'z', 'x', 'c', 'v', 'b', 'n', 'm', 'BACK'],
   ['123', ' ', 'CLOSE']
 ]
+
 
 const upperLayout: string[][] = [
   ['Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P'],
