@@ -9,8 +9,15 @@
   --color-card-bg: rgba(255, 255, 255, 0.06);
   --color-card-border: rgba(255, 255, 255, 0.1);
 
-  --font-serif: "Noto Serif SC", "SimSun", "Microsoft YaHei", serif;
-  --font-sans: "Noto Sans SC", "Microsoft YaHei", sans-serif;
+  /* * 衬线体变量：优先使用思源宋体
+   * 对应主标题，设置 font-weight: 900 即可展现 Heavy 字重
+   */
+  --font-serif: "Source Han Serif CN", "Source Han Serif", "Noto Serif SC", "SimSun", serif;
+  
+  /* * 非衬线体变量：优先使用 HarmonyOS Sans (鸿蒙黑体)
+   * 对应副标题及全站基础文本
+   */
+  --font-sans: "HarmonyOS Sans SC", "HarmonyOS Sans", "Noto Sans SC", "Microsoft YaHei", sans-serif;
 
   --radius-sm: 8px;
   --radius-md: 16px;

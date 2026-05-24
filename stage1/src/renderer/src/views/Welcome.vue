@@ -80,7 +80,7 @@ function handleExitTap() {
 .welcome-text h1 {
   font-family: var(--font-serif);
   font-size: 72px;
-  font-weight: 700;
+  font-weight: 900;
   letter-spacing: 12px;
   margin-bottom: 16px;
   text-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
