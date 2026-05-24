@@ -56,11 +56,10 @@ const cardStyle = computed(() => {
   inset: 0;
   background: linear-gradient(
     to top,
-    rgba(0, 0, 0, 0.7) 0%,
-    rgba(0, 0, 0, 0.1) 60%,
-    rgba(0, 0, 0, 0.2) 100%
+    rgba(0, 0, 0, 0.8) 0%,
+    rgba(0, 0, 0, 0.2) 60%,
+    rgba(0, 0, 0, 0.3) 100%
   );
-  backdrop-filter: blur(2px);
   display: flex;
   align-items: flex-end;
   padding: 24px;
