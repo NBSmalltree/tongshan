@@ -48,17 +48,20 @@ export function usePinyin() {
     const lowerInput = input.trim().toLowerCase()
     const candidates: string[] = []
 
+    // 1. 查找项目专有词库与官方词库的索引
     for (const item of WORD_INDEXES) {
       if (item.fullPinyin.startsWith(lowerInput) || item.initialPinyin.startsWith(lowerInput)) {
         candidates.push(item.text)
       }
-      // 性能小优化：如果已经找到了足够多的常用词，可以提前中断循环（可选）
-      if (candidates.length >= 20) {
-        break
-      }
+      if (candidates.length >= 50) break // 扩大遍历范围以提高匹配概率
     }
     
-    return [...new Set(candidates)].slice(0, 8)
+    // 2. 兜底方案：如果没有任何联想词，返回输入拼音作为候选，保证不击穿
+    if (candidates.length === 0) {
+      candidates.push(input)
+    }
+    
+    return [...new Set(candidates)].slice(0, 20) // 增大候选展示上限
   }
 
   function getFullPinyin(text: string): string {
