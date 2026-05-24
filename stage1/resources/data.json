@@ -3,31 +3,31 @@
     {
       "name": "shuimitao",
       "label": "水蜜桃",
-      "background": "images/themes/shuimitao.jpg",
+      "background": "images/themes/shuimitao.jpeg",
       "description": "奉化水蜜桃，千年桃乡的甜蜜传承"
     },
     {
       "name": "mile",
       "label": "弥勒",
-      "background": "images/themes/mile.jpg",
+      "background": "images/themes/mile.jpeg",
       "description": "弥勒圣地，笑迎天下的大佛文化"
     },
     {
       "name": "minguo",
       "label": "民国",
-      "background": "images/themes/minguo.jpg",
+      "background": "images/themes/minguo.jpeg",
       "description": "民国风情，近代奉化的风云往事"
     },
     {
       "name": "songyun",
       "label": "宋韵",
-      "background": "images/themes/songyun.jpg",
+      "background": "images/themes/songyun.jpeg",
       "description": "宋韵遗风，千年前的文化雅集"
     },
     {
       "name": "feiyi",
       "label": "非遗",
-      "background": "images/themes/feiyi.jpg",
+      "background": "images/themes/feiyi.jpeg",
       "description": "非物质文化遗产，活态传承的匠心技艺"
     }
   ],
