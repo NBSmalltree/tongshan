@@ -15,11 +15,12 @@
       </div>
     </main>
 
-    <SearchBar />
-
-    <transition name="slide-up">
-      <SearchResults v-if="appStore.showSearchResults" />
-    </transition>
+    <div class="bottom-search-trigger-bar" @click="navigateToSearchPage">
+      <div class="trigger-inner">
+        <span class="search-icon">🔍</span>
+        <span class="placeholder-text">搜索作品、作者、标签…</span>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -30,8 +31,6 @@ import { useDataStore } from '../stores/dataStore'
 import { useAppStore } from '../stores/appStore'
 import { useStaticPath } from '../composables/useStaticPath'
 import ThemeCard from '../components/ThemeCard.vue'
-import SearchBar from '../components/SearchBar.vue'
-import SearchResults from '../components/SearchResults.vue'
 
 const router = useRouter()
 const dataStore = useDataStore()
@@ -53,6 +52,10 @@ function goToTheme(themeName: string) {
   appStore.currentTheme = themeName
   router.push(`/theme/${themeName}`)
 }
+
+function navigateToSearchPage() {
+  router.push('/search')
+}
 </script>
 
 <style scoped>
@@ -64,6 +67,7 @@ function goToTheme(themeName: string) {
   overflow: hidden;
   background-size: cover;
   background-position: center;
+  background-color: #0b0d19; /* 保证暗色底色与 ThemeList 一致 */
 }
 
 .dashboard-header {
@@ -75,32 +79,59 @@ function goToTheme(themeName: string) {
 }
 
 .dashboard-header h1 {
-  font-family: var(--font-serif);
+  font-family: var(--font-serif), serif;
   font-size: 32px;
   font-weight: 600;
   letter-spacing: 4px;
-  color: var(--color-text);
+  color: #d1e2ff; /* 换用更柔和的高级青白调，配合大屏抗疲劳 */
 }
 
 .clickable-title {
   cursor: pointer;
 }
 
+/* ================= 核心修复点：重构主体容器与间距 ================= */
 .dashboard-content {
   flex: 1;
   display: flex;
-  align-items: center;
+  align-items: center; /* 垂直居中保证两行卡片完美居中分布 */
   justify-content: center;
-  padding: 20px 60px 120px;
+  padding: 10px 80px; /* 彻底移除 120px 的巨大底补丁，改为全屏 Safe Area 规范的 80px 左右边距 */
   overflow: hidden;
 }
 
 .themes-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 32px;
+  gap: 24px; /* 略微收紧网格间距（从32px到24px），在有限垂直空间内释放更多安全高度 */
   max-width: 1400px;
   width: 100%;
+  max-height: 100%; /* 约束最大高度不超出父容器 */
 }
 
+/* ================= 底部搜索触发栏：深度契合原 SearchBar 规范 ================= */
+.bottom-search-trigger-bar {
+  flex-shrink: 0; 
+  width: 100%; 
+  height: 80px;
+  background: linear-gradient(to top, rgba(13, 13, 13, 0.98), rgba(26, 26, 46, 0.95));
+  border-top: 1px solid rgba(255, 255, 255, 0.12); 
+  cursor: pointer;
+  display: flex; 
+  align-items: center; 
+  padding: 0 80px; /* 改为与大屏规范一致的 80px 侧边距 */
+  box-sizing: border-box;
+}
+
+.trigger-inner { 
+  display: flex; 
+  align-items: center; 
+  color: rgba(255, 255, 255, 0.4); 
+  font-size: 18px; 
+}
+
+.search-icon { 
+  margin-right: 16px; 
+  font-size: 20px; 
+}
 </style>
