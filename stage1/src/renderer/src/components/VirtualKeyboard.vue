@@ -5,7 +5,11 @@
       
       <button class="nav-btn" @click="prevPage" v-if="candidates.length > pageSize">❮</button>
       
+      
+      <button class="nav-btn" @click="prevPage" v-if="candidates.length > pageSize">❮</button>
+      
       <button
+        v-for="(cand, i) in paginatedCandidates"
         v-for="(cand, i) in paginatedCandidates"
         :key="i"
         class="pinyin-candidate"
@@ -77,6 +81,22 @@ function nextPage() {
   if ((page.value + 1) * pageSize < candidates.value.length) page.value++
 }
 
+const page = ref(0)
+const pageSize = 5
+
+const paginatedCandidates = computed(() => {
+  const start = page.value * pageSize
+  return candidates.value.slice(start, start + pageSize)
+})
+
+function prevPage() {
+  if (page.value > 0) page.value--
+}
+
+function nextPage() {
+  if ((page.value + 1) * pageSize < candidates.value.length) page.value++
+}
+
 // 监听拼音缓存变化，更新候选词
 watch(() => appStore.pinyinBuffer, (val) => {
   if (val.length === 0) {
@@ -84,6 +104,7 @@ watch(() => appStore.pinyinBuffer, (val) => {
   } else {
     candidates.value = getPinyinCandidates(val)
   }
+  page.value = 0
   page.value = 0
 }, { immediate: true })
 
