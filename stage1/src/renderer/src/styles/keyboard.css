@@ -26,6 +26,14 @@
   align-items: center;
 }
 
+.pinyin-buffer {
+  color: var(--color-accent);
+  font-weight: bold;
+  padding: 0 10px;
+  min-width: fit-content;
+  font-size: 18px;
+}
+
 .pinyin-candidate {
   flex-shrink: 0;
   padding: 8px 16px;

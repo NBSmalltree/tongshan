@@ -5,30 +5,32 @@
       <input
         ref="inputRef"
         type="text"
-        :value="appStore.searchKeyword"
+        :value="displayValue"
         placeholder="搜索作品、作者、标签…"
         class="search-input"
         readonly
       />
-      <button v-if="appStore.searchKeyword" class="search-clear" @click.stop="clearSearch">×</button>
+      <button v-if="appStore.searchKeyword || appStore.pinyinBuffer" class="search-clear" @click.stop="clearSearch">×</button>
     </div>
 
     <VirtualKeyboard
       :visible="appStore.showKeyboard"
-      @input="onKeyboardInput"
-      @backspace="onBackspace"
       @close="closeKeyboard"
     />
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { useAppStore } from '../stores/appStore'
 import VirtualKeyboard from './VirtualKeyboard.vue'
 
 const appStore = useAppStore()
 const inputRef = ref<HTMLInputElement | null>(null)
+
+const displayValue = computed(() => {
+  return appStore.searchKeyword + appStore.pinyinBuffer
+})
 
 function openKeyboard() {
   appStore.toggleKeyboard(true)
@@ -40,18 +42,6 @@ function closeKeyboard() {
 
 function clearSearch() {
   appStore.clearSearch()
-}
-
-function onKeyboardInput(char: string) {
-  const current = appStore.searchKeyword
-  appStore.setSearchKeyword(current + char)
-}
-
-function onBackspace() {
-  const current = appStore.searchKeyword
-  if (current.length > 0) {
-    appStore.setSearchKeyword(current.slice(0, -1))
-  }
 }
 </script>
 

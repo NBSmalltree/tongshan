@@ -1,6 +1,7 @@
 <template>
   <div class="keyboard-container" :class="{ visible }">
-    <div class="pinyin-candidates" v-if="candidates.length > 0">
+    <div class="pinyin-candidates" v-if="appStore.pinyinBuffer.length > 0 || candidates.length > 0">
+      <div class="pinyin-buffer">{{ appStore.pinyinBuffer }}</div>
       <button
         v-for="(cand, i) in candidates"
         :key="i"
@@ -37,20 +38,28 @@
 
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue'
+import { useAppStore } from '../stores/appStore'
 import { usePinyin } from '../composables/usePinyin'
 
 const props = defineProps<{ visible: boolean }>()
 const emit = defineEmits<{
-  input: [char: string]
-  backspace: []
   close: []
 }>()
 
+const appStore = useAppStore()
 const { getPinyinCandidates } = usePinyin()
 
-const pinyinBuffer = ref('')
 const candidates = ref<string[]>([])
 const layoutMode = ref<'lower' | 'upper' | 'number'>('lower')
+
+// 监听拼音缓存变化，更新候选词
+watch(() => appStore.pinyinBuffer, (val) => {
+  if (val.length === 0) {
+    candidates.value = []
+  } else {
+    candidates.value = getPinyinCandidates(val)
+  }
+}, { immediate: true })
 
 const lowerLayout: string[][] = [
   ['q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p'],
@@ -81,11 +90,10 @@ const currentLayout = computed(() => {
 
 function onKeyClick(key: string) {
   if (key === 'BACK') {
-    if (pinyinBuffer.value.length > 0) {
-      pinyinBuffer.value = pinyinBuffer.value.slice(0, -1)
-      updateCandidates()
-    } else {
-      emit('backspace')
+    if (appStore.pinyinBuffer.length > 0) {
+      appStore.setPinyinBuffer(appStore.pinyinBuffer.slice(0, -1))
+    } else if (appStore.searchKeyword.length > 0) {
+      appStore.setSearchKeyword(appStore.searchKeyword.slice(0, -1))
     }
     return
   }
@@ -111,50 +119,40 @@ function onKeyClick(key: string) {
     return
   }
 
+  // 字母输入逻辑
   if (/^[a-z]$/.test(key)) {
-    pinyinBuffer.value += key
-    updateCandidates()
+    appStore.setPinyinBuffer(appStore.pinyinBuffer + key)
     return
   }
 
   if (key === ' ') {
-    if (pinyinBuffer.value.length > 0 && candidates.value.length > 0) {
+    if (appStore.pinyinBuffer.length > 0 && candidates.value.length > 0) {
       selectCandidate(candidates.value[0])
     } else {
-      emit('input', ' ')
+      appStore.setSearchKeyword(appStore.searchKeyword + ' ')
     }
     return
   }
 
-  emit('input', key)
-}
-
-function updateCandidates() {
-  if (pinyinBuffer.value.length === 0) {
-    candidates.value = []
-    return
-  }
-  candidates.value = getPinyinCandidates(pinyinBuffer.value)
+  // 其他字符（数字、符号等）直接进入确认区
+  appStore.setSearchKeyword(appStore.searchKeyword + key)
 }
 
 function selectCandidate(candidate: string) {
-  emit('input', candidate)
-  pinyinBuffer.value = ''
-  candidates.value = []
+  appStore.setSearchKeyword(appStore.searchKeyword + candidate)
+  appStore.setPinyinBuffer('')
 }
 
 function commitPinyin() {
-  if (pinyinBuffer.value.length > 0) {
-    emit('input', pinyinBuffer.value)
-    pinyinBuffer.value = ''
-    candidates.value = []
+  if (appStore.pinyinBuffer.length > 0) {
+    appStore.setSearchKeyword(appStore.searchKeyword + appStore.pinyinBuffer)
+    appStore.setPinyinBuffer('')
   }
 }
 
 watch(() => props.visible, (v) => {
   if (!v) {
-    pinyinBuffer.value = ''
-    candidates.value = []
+    appStore.setPinyinBuffer('')
     layoutMode.value = 'lower'
   }
 })
