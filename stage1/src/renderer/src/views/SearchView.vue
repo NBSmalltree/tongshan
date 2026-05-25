@@ -108,7 +108,7 @@ const appStore = useAppStore()
 
 // 1. 分类数据定义
 const filterGroups = {
-  content: ['乡土人文', '非遗技艺', '自然山水', '文艺艺术'],
+  category: ['乡土人文', '非遗技艺', '自然山水', '文艺艺术'],
   file: ['图片', '流媒体', '文档', '数字交互'],
   region: ['溪口', '滕头', '莼湖'],
   period: ['古代', '近代', '当代']
@@ -116,14 +116,14 @@ const filterGroups = {
 
 // 默认选中”板块”类别中的”乡土人文”
 const activeFilters = reactive<Record<string, string>>({
-  content: '乡土人文',
+  category: '乡土人文',
   file: '',
   region: '',
   period: ''
 })
 
 function categoryLabel(cat: string) {
-  const map: Record<string, string> = { content: '板块', file: '文件', region: '地域', period: '时期' }
+  const map: Record<string, string> = { category: '板块', file: '文件', region: '地域', period: '时期' }
   return map[cat] || cat
 }
 
@@ -142,17 +142,20 @@ function toggleFilter(category: string, tag: string) {
 const filteredMaterials = computed(() => {
   return dataStore.materials.filter(m => {
     // 标签过滤：如果某大类激活了标签，素材必须满足条件
-    if (activeFilters.content && m.theme !== activeFilters.content && !m.tags.includes(activeFilters.content)) return false
+    if (activeFilters.category && m.category !== activeFilters.category) return false
     if (activeFilters.file && m.type !== fileTypeMap(activeFilters.file)) return false
-    if (activeFilters.region && !m.tags.includes(activeFilters.region)) return false
-    if (activeFilters.period && !m.tags.includes(activeFilters.period)) return false
+    if (activeFilters.region && m.region !== activeFilters.region) return false
+    if (activeFilters.period && m.period !== activeFilters.period) return false
 
     // 输入框模糊过滤
     if (appStore.searchKeyword.trim()) {
       const kw = appStore.searchKeyword.toLowerCase().trim()
-      const matchKw = m.title.toLowerCase().includes(kw) || 
-                      m.author.toLowerCase().includes(kw) || 
-                      m.tags.some(t => t.toLowerCase().includes(kw))
+      const matchKw = m.title.toLowerCase().includes(kw) ||
+                      m.author.toLowerCase().includes(kw) ||
+                      m.tags.some(t => t.toLowerCase().includes(kw)) ||
+                      m.category.toLowerCase().includes(kw) ||
+                      m.region.toLowerCase().includes(kw) ||
+                      m.period.toLowerCase().includes(kw)
       if (!matchKw) return false
     }
     return true
@@ -160,7 +163,7 @@ const filteredMaterials = computed(() => {
 })
 
 function fileTypeMap(label: string) {
-  const map: Record<string, string> = { '图片': 'image', '流媒体': 'video', '音频': 'audio', '文档': 'text' }
+  const map: Record<string, string> = { '图片': 'image', '流媒体': 'video', '音频': 'audio', '文档': 'text', '数字交互': 'digital' }
   return map[label] || label
 }
 

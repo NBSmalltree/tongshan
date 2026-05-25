@@ -7,6 +7,9 @@ export interface Material {
   title: string
   author: string
   type: 'video' | 'audio' | 'image' | 'text'
+  category: string
+  region: string
+  period: string
   cover: string
   content: string
   tags: string[]
@@ -54,6 +57,9 @@ export const useDataStore = defineStore('data', () => {
         || m.author.toLowerCase().includes(kw)
         || m.tags.some(t => t.toLowerCase().includes(kw))
         || m.theme.toLowerCase().includes(kw)
+        || m.category.toLowerCase().includes(kw)
+        || m.region.toLowerCase().includes(kw)
+        || m.period.toLowerCase().includes(kw)
     })
   }
 
