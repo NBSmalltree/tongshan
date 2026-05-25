@@ -63,6 +63,7 @@ const typeLabel = computed(() => {
 .material-card-overlay {
   position: absolute;
   inset: 0;
+  border-radius: inherit;
   background: linear-gradient(
     to top,
     rgba(0, 0, 0, 0.8) 0%,
