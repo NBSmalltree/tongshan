@@ -76,6 +76,7 @@ function navigateToSearchPage() {
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  padding-top: 3vh;
 }
 
 .dashboard-header h1 {
