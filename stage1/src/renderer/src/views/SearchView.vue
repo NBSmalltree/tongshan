@@ -106,24 +106,24 @@ const router = useRouter()
 const dataStore = useDataStore()
 const appStore = useAppStore()
 
-// 1. 分类数据定义 (严格对照 DESIGN.md)
+// 1. 分类数据定义
 const filterGroups = {
-  resource: ['乡土人文', '非遗技艺', '自然山水', '文艺艺术'],
+  content: ['乡土人文', '非遗技艺', '自然山水', '文艺艺术'],
   file: ['图片', '流媒体', '文档', '数字交互'],
   region: ['溪口', '滕头', '莼湖'],
-  time: ['古代', '近代', '当代']
+  period: ['古代', '近代', '当代']
 }
 
-// 默认选中“资源”类别中的“乡土人文”
+// 默认选中”板块”类别中的”乡土人文”
 const activeFilters = reactive<Record<string, string>>({
-  resource: '乡土人文',
+  content: '乡土人文',
   file: '',
   region: '',
-  time: ''
+  period: ''
 })
 
 function categoryLabel(cat: string) {
-  const map: Record<string, string> = { resource: '资源', file: '文件', region: '地域', time: '时间' }
+  const map: Record<string, string> = { content: '板块', file: '文件', region: '地域', period: '时期' }
   return map[cat] || cat
 }
 
@@ -142,10 +142,10 @@ function toggleFilter(category: string, tag: string) {
 const filteredMaterials = computed(() => {
   return dataStore.materials.filter(m => {
     // 标签过滤：如果某大类激活了标签，素材必须满足条件
-    if (activeFilters.resource && m.theme !== activeFilters.resource && !m.tags.includes(activeFilters.resource)) return false
+    if (activeFilters.content && m.theme !== activeFilters.content && !m.tags.includes(activeFilters.content)) return false
     if (activeFilters.file && m.type !== fileTypeMap(activeFilters.file)) return false
     if (activeFilters.region && !m.tags.includes(activeFilters.region)) return false
-    if (activeFilters.time && !m.tags.includes(activeFilters.time)) return false
+    if (activeFilters.period && !m.tags.includes(activeFilters.period)) return false
 
     // 输入框模糊过滤
     if (appStore.searchKeyword.trim()) {
