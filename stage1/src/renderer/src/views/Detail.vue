@@ -180,6 +180,8 @@ function goBack() {
 .text-cover {
   flex-shrink: 0;
   width: 400px;
+  display: flex;
+  align-items: center;
 }
 
 .text-cover img {
@@ -192,13 +194,15 @@ function goBack() {
 .text-body {
   flex: 1;
   overflow-y: auto;
-  padding-top: 20px;
+  display: flex;
+  flex-direction: column;
 }
 
 .text-body h1 {
   font-family: var(--font-serif);
   font-size: 36px;
   margin-bottom: 16px;
+  margin-top: auto;
 }
 
 .text-author {
@@ -212,5 +216,6 @@ function goBack() {
   line-height: 2;
   color: rgba(245, 240, 232, 0.85);
   white-space: pre-wrap;
+  margin-bottom: auto;
 }
 </style>
