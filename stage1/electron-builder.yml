@@ -1,5 +1,5 @@
 appId: com.tongshan.culture-platform
-productName: 文化展示
+productName: 在地文化数字共创平台
 copyright: Copyright © 2026
 
 directories:
@@ -23,7 +23,7 @@ files:
 win:
   target:
     - nsis
-  icon: resources/icon.png
+  # icon: resources/icon.png
   artifactName: "${productName}-Setup-${version}.${ext}"
 
 nsis:
@@ -32,5 +32,5 @@ nsis:
   allowToChangeInstallationDirectory: false
   createDesktopShortcut: true
   runAfterFinish: true
-  shortcutName: 文化展示
+  shortcutName: 在地文化数字共创平台
   deleteAppDataOnUninstall: true
