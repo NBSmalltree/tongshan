@@ -3,7 +3,6 @@
     <div class="search-input-wrapper" @click="openKeyboard">
       <span class="search-icon">🔍</span>
       <input
-        ref="inputRef"
         type="text"
         :value="displayValue"
         placeholder="搜索作品、作者、标签…"
@@ -21,12 +20,11 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed } from 'vue'
 import { useAppStore } from '../stores/appStore'
 import VirtualKeyboard from './VirtualKeyboard.vue'
 
 const appStore = useAppStore()
-const inputRef = ref<HTMLInputElement | null>(null)
 
 const displayValue = computed(() => {
   return appStore.searchKeyword + appStore.pinyinBuffer
