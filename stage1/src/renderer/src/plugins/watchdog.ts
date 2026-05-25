@@ -8,6 +8,9 @@ export function installWatchdog(router: Router): void {
 
   const reset = () => {
     clearTimeout(timer)
+    if (router.currentRoute.value.meta.trialExempt) {
+      return
+    }
     timer = setTimeout(() => {
       const appStore = useAppStore()
       appStore.reset()

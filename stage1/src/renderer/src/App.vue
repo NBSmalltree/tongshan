@@ -11,11 +11,18 @@ import { onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useDataStore } from './stores/dataStore'
 import { installWatchdog } from './plugins/watchdog'
+import { useTrial } from './composables/useTrial'
 
 const router = useRouter()
 const dataStore = useDataStore()
 
 onMounted(async () => {
+  const { checkTrial } = useTrial()
+  const expired = await checkTrial()
+  if (expired) {
+    router.push('/trial-expired')
+    return
+  }
   await dataStore.loadData()
   installWatchdog(router)
 })

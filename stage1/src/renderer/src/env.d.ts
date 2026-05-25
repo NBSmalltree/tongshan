@@ -9,8 +9,11 @@ declare module '*.vue' {
 interface ElectronAPI {
   getStaticPath: () => Promise<string>
   readDataJson: () => Promise<any>
+  readConfigJson: () => Promise<any>
   resolveAsset: (relativePath: string) => Promise<string>
   closeApp: () => Promise<void>
+  checkTrial: () => Promise<{ expired: boolean; openCount: number; dateReached: boolean }>
+  getTrialStatus: () => Promise<{ expired: boolean; openCount: number; dateReached: boolean }>
 }
 
 interface Window {

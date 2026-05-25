@@ -6,6 +6,8 @@ export interface ElectronAPI {
   readConfigJson: () => Promise<any>
   resolveAsset: (relativePath: string) => Promise<string>
   closeApp: () => Promise<void>
+  checkTrial: () => Promise<{ expired: boolean; openCount: number; dateReached: boolean }>
+  getTrialStatus: () => Promise<{ expired: boolean; openCount: number; dateReached: boolean }>
 }
 
 const electronAPI: ElectronAPI = {
@@ -13,7 +15,9 @@ const electronAPI: ElectronAPI = {
   readDataJson: () => ipcRenderer.invoke('read-data-json'),
   readConfigJson: () => ipcRenderer.invoke('read-config-json'),
   resolveAsset: (relativePath: string) => ipcRenderer.invoke('resolve-asset', relativePath),
-  closeApp: () => ipcRenderer.invoke('close-app')
+  closeApp: () => ipcRenderer.invoke('close-app'),
+  checkTrial: () => ipcRenderer.invoke('check-trial'),
+  getTrialStatus: () => ipcRenderer.invoke('get-trial-status')
 }
 
 contextBridge.exposeInMainWorld('electronAPI', electronAPI)

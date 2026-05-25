@@ -1,6 +1,6 @@
 import { app, shell, BrowserWindow, ipcMain, globalShortcut, protocol, net } from 'electron'
 import { join } from 'path'
-import { existsSync, readFileSync } from 'fs'
+import { existsSync, readFileSync, writeFileSync } from 'fs'
 import { pathToFileURL } from 'url'
 
 let mainWindow: BrowserWindow | null = null
@@ -138,6 +138,45 @@ function registerStaticProtocol(): void {
   })
 }
 
+interface TrialData {
+  openCount: number
+}
+
+function getTrialDataPath(): string {
+  return join(app.getPath('userData'), 'trial.json')
+}
+
+function readTrialData(): TrialData {
+  try {
+    const trialPath = getTrialDataPath()
+    if (existsSync(trialPath)) {
+      return JSON.parse(readFileSync(trialPath, 'utf-8'))
+    }
+  } catch {
+    // 文件损坏时重置
+  }
+  return { openCount: 0 }
+}
+
+function writeTrialData(data: TrialData): void {
+  try {
+    writeFileSync(getTrialDataPath(), JSON.stringify(data), 'utf-8')
+  } catch {
+    // 写入失败时静默忽略
+  }
+}
+
+function checkTrialCore(increment: boolean): { expired: boolean; openCount: number; dateReached: boolean } {
+  const data = readTrialData()
+  if (increment) {
+    data.openCount += 1
+    writeTrialData(data)
+  }
+  const dateReached = Date.now() >= new Date('2026-07-01').getTime()
+  const expired = dateReached && data.openCount > 20
+  return { expired, openCount: data.openCount, dateReached }
+}
+
 function registerIpcHandlers(): void {
   ipcMain.handle('get-static-path', () => {
     return getStaticPath()
@@ -176,6 +215,14 @@ function registerIpcHandlers(): void {
 
   ipcMain.handle('close-app', () => {
     app.quit()
+  })
+
+  ipcMain.handle('check-trial', () => {
+    return checkTrialCore(true)
+  })
+
+  ipcMain.handle('get-trial-status', () => {
+    return checkTrialCore(false)
   })
 }
 
