@@ -481,7 +481,7 @@ function goToDetail(id: string) {
 :deep(.swiper-card) {
   flex: 0 0 320px !important;
   height: 440px !important;
-  background: rgba(255, 255, 255, 0.05) !important;
+  background-color: rgba(255, 255, 255, 0.05) !important;
   border-radius: 20px !important;
   border: 1px solid rgba(255, 255, 255, 0.12) !important;
 }

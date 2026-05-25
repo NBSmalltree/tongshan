@@ -236,7 +236,7 @@ function goToDetail(id: string) {
 .left-arrow { left: 24px; } .right-arrow { right: 24px; }
 
 :deep(.swiper-card) {
-  flex: 0 0 350px !important; height: 480px !important; background: rgba(255, 255, 255, 0.05) !important;
+  flex: 0 0 350px !important; height: 480px !important; background-color: rgba(255, 255, 255, 0.05) !important;
   backdrop-filter: blur(25px) saturate(120%); border: 1px solid rgba(255, 255, 255, 0.12) !important;
   border-radius: 20px !important; box-shadow: 0 16px 48px rgba(0, 0, 0, 0.4); cursor: grab;
 }

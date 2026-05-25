@@ -27,16 +27,28 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useDataStore, type Material } from '../stores/dataStore'
 import { useAppStore } from '../stores/appStore'
+import { useStaticPath } from '../composables/useStaticPath'
 
 const router = useRouter()
 const dataStore = useDataStore()
 const appStore = useAppStore()
+const { resolveAssetUrl } = useStaticPath()
 
 const results = computed(() => dataStore.fuzzySearch(appStore.searchKeyword))
+const coverUrls = ref<Record<string, string>>({})
+
+watch(results, async (items) => {
+  for (const item of items) {
+    if (!coverUrls.value[item.id]) {
+      const url = await resolveAssetUrl(item.cover)
+      if (url) coverUrls.value[item.id] = url
+    }
+  }
+}, { immediate: true })
 
 function typeLabel(type: string): string {
   const map: Record<string, string> = { video: '视频', audio: '音频', image: '图片', text: '文字' }
@@ -44,6 +56,10 @@ function typeLabel(type: string): string {
 }
 
 function coverStyle(item: Material) {
+  const url = coverUrls.value[item.id]
+  if (url) {
+    return { backgroundImage: `url(${url})` }
+  }
   return { backgroundColor: 'var(--color-card-bg)' }
 }
 
