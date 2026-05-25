@@ -229,16 +229,42 @@
     },
     {
       "id": "cszp-001",
-      "theme": "",
+      "theme": "mile",
       "title": "弥勒文化IP设计",
       "author": "周慧敏",
       "type": "image",
       "category": "文艺艺术",
+      "region": "",
+      "period": "当代",
+      "cover": "images/materials/cszp-001.jpg",
+      "content": "images/materials/cszp-001.jpg",
+      "tags": ["弥勒", "动画", "设计"]
+    },
+    {
+      "id": "cszp-002",
+      "theme": "feiyi",
+      "title": "溪口千层饼",
+      "author": "姚俊豪 张桐 邓子权",
+      "type": "video",
+      "category": "非遗技艺",
       "region": "溪口",
       "period": "当代",
-      "cover": "images/covers/cszp-001.jpeg",
-      "content": "images/materials/cszp-001.jpeg",
-      "tags": ["弥勒", "动画"]
+      "cover": "images/covers/cszp-002.jpg",
+      "content": "videos/cszp-002.mp4",
+      "tags": ["溪口", "千层饼", "美食"]
+    },
+    {
+      "id": "cszp-003",
+      "theme": "mile",
+      "title": "弥勒福袋设计",
+      "author": "陈丹彤 磨柳婷 莫梓",
+      "type": "image",
+      "category": "文艺艺术",
+      "region": "",
+      "period": "当代",
+      "cover": "images/materials/cszp-003.jpg",
+      "content": "images/materials/cszp-003.jpg",
+      "tags": ["弥勒", "动画", "设计", "福袋"]
     }
   ]
 }
