@@ -1,11 +1,12 @@
 import { app, shell, BrowserWindow, ipcMain, globalShortcut, protocol, net } from 'electron'
 import { join } from 'path'
 import { existsSync, readFileSync } from 'fs'
+import { pathToFileURL } from 'url'
 
 let mainWindow: BrowserWindow | null = null
 
 protocol.registerSchemesAsPrivileged([
-  { scheme: 'static', privileges: { standard: true, secure: true, supportFetchAPI: true } }
+  { scheme: 'static', privileges: { standard: true, secure: true, supportFetchAPI: true, stream: true } }
 ])
 
 interface AppConfig {
@@ -121,13 +122,17 @@ function getResourcesPath(): string {
 function registerStaticProtocol(): void {
   protocol.handle('static', (request) => {
     const relativePath = request.url.replace('static://', '')
+
+    // 1. 检查 resources 目录
     const resourcesFullPath = join(getResourcesPath(), relativePath)
     if (existsSync(resourcesFullPath)) {
-      return net.fetch(`file://${resourcesFullPath}`)
+      return net.fetch(pathToFileURL(resourcesFullPath).toString())
     }
+
+    // 2. 检查 static 目录
     const staticFullPath = join(getStaticPath(), relativePath)
     if (existsSync(staticFullPath)) {
-      return net.fetch(`file://${staticFullPath}`)
+      return net.fetch(pathToFileURL(staticFullPath).toString())
     }
     return new Response('Not Found', { status: 404 })
   })
