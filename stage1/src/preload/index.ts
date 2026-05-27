@@ -6,8 +6,8 @@ export interface ElectronAPI {
   readConfigJson: () => Promise<any>
   resolveAsset: (relativePath: string) => Promise<string>
   closeApp: () => Promise<void>
-  checkTrial: () => Promise<{ expired: boolean; openCount: number; dateReached: boolean }>
-  getTrialStatus: () => Promise<{ expired: boolean; openCount: number; dateReached: boolean }>
+  checkTrial: () => Promise<{ expired: boolean; clockRollback: boolean; dateReached: boolean }>
+  getTrialStatus: () => Promise<{ expired: boolean; clockRollback: boolean; dateReached: boolean }>
 }
 
 const electronAPI: ElectronAPI = {

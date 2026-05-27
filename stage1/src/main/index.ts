@@ -139,7 +139,7 @@ function registerStaticProtocol(): void {
 }
 
 interface TrialData {
-  openCount: number
+  lastLaunchTime: number
 }
 
 function getTrialDataPath(): string {
@@ -155,7 +155,7 @@ function readTrialData(): TrialData {
   } catch {
     // 文件损坏时重置
   }
-  return { openCount: 0 }
+  return { lastLaunchTime: 0 }
 }
 
 function writeTrialData(data: TrialData): void {
@@ -166,15 +166,17 @@ function writeTrialData(data: TrialData): void {
   }
 }
 
-function checkTrialCore(increment: boolean): { expired: boolean; openCount: number; dateReached: boolean } {
+function checkTrialCore(update: boolean): { expired: boolean; clockRollback: boolean; dateReached: boolean } {
   const data = readTrialData()
-  if (increment) {
-    data.openCount += 1
+  const now = Date.now()
+  const clockRollback = data.lastLaunchTime > 0 && now < data.lastLaunchTime
+  const dateReached = now >= new Date('2026-07-01').getTime()
+  const expired = dateReached || clockRollback
+  if (update && !clockRollback) {
+    data.lastLaunchTime = Math.max(now, data.lastLaunchTime)
     writeTrialData(data)
   }
-  const dateReached = Date.now() >= new Date('2026-07-01').getTime()
-  const expired = dateReached && data.openCount > 20
-  return { expired, openCount: data.openCount, dateReached }
+  return { expired, clockRollback, dateReached }
 }
 
 function registerIpcHandlers(): void {
