@@ -10,6 +10,11 @@ const router = createRouter({
       component: () => import('../views/Welcome.vue')
     },
     {
+      path: '/region',
+      name: 'RegionSelect',
+      component: () => import('../views/RegionSelect.vue')
+    },
+    {
       path: '/dashboard',
       name: 'Dashboard',
       component: () => import('../views/Dashboard.vue')

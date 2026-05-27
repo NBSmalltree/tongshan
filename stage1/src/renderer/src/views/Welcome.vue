@@ -36,7 +36,7 @@ onMounted(async () => {
 })
 
 function enterDashboard() {
-  router.push('/dashboard')
+  router.push('/region')
 }
 
 function handleExitTap() {

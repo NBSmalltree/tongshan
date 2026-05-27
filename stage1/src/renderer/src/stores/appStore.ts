@@ -3,6 +3,8 @@ import { ref } from 'vue'
 
 export const useAppStore = defineStore('app', () => {
   const currentTheme = ref('')
+  const selectedCity = ref('')
+  const selectedDistrict = ref('')
   const searchKeyword = ref('')
   const pinyinBuffer = ref('')
   const showKeyboard = ref(false)
@@ -30,6 +32,8 @@ export const useAppStore = defineStore('app', () => {
 
   function reset(): void {
     currentTheme.value = ''
+    selectedCity.value = ''
+    selectedDistrict.value = ''
     searchKeyword.value = ''
     pinyinBuffer.value = ''
     showKeyboard.value = false
@@ -37,7 +41,9 @@ export const useAppStore = defineStore('app', () => {
   }
 
   return { 
-    currentTheme, 
+    currentTheme,
+    selectedCity,
+    selectedDistrict,
     searchKeyword, 
     pinyinBuffer,
     showKeyboard, 

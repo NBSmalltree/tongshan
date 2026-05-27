@@ -2,16 +2,24 @@
   <div class="dashboard" :style="{ backgroundImage: bgUrl ? `url(${bgUrl})` : '' }">
     <header class="dashboard-header">
       <h1 class="clickable-title" @click="goHome">在地文化数字共创平台</h1>
+      <span v-if="selectedDistrict" class="region-badge" @click="goToRegion">
+        {{ selectedDistrict }}
+      </span>
     </header>
 
     <main class="dashboard-content">
-      <div class="themes-grid">
+      <div v-if="hasContent" class="themes-grid">
         <ThemeCard
           v-for="theme in themes"
           :key="theme.name"
           :theme="theme"
           @click="goToTheme(theme.name)"
         />
+      </div>
+
+      <div v-else class="under-construction">
+        <h2>{{ selectedDistrict }}板块火热建设中</h2>
+        <p>欢迎投稿</p>
       </div>
     </main>
 
@@ -39,10 +47,17 @@ const { resolveAssetUrl } = useStaticPath()
 const bgUrl = ref('')
 
 onMounted(async () => {
+  if (!appStore.selectedDistrict) {
+    router.replace('/region')
+    return
+  }
   bgUrl.value = await resolveAssetUrl('images/background/bg1.png')
 })
 
 const themes = computed(() => dataStore.themes.filter(t => t.visible !== false))
+const selectedCity = computed(() => appStore.selectedCity)
+const selectedDistrict = computed(() => appStore.selectedDistrict)
+const hasContent = computed(() => appStore.selectedDistrict === '奉化')
 
 function goHome() {
   router.push('/')
@@ -55,6 +70,10 @@ function goToTheme(themeName: string) {
 
 function navigateToSearchPage() {
   router.push('/search')
+}
+
+function goToRegion() {
+  router.push('/region')
 }
 </script>
 
@@ -131,8 +150,51 @@ function navigateToSearchPage() {
   font-size: 18px; 
 }
 
-.search-icon { 
-  margin-right: 16px; 
-  font-size: 20px; 
+.search-icon {
+  margin-right: 16px;
+  font-size: 20px;
+}
+
+/* ================= 地区标识与建设中状态 ================= */
+.region-badge {
+  margin-left: 16px;
+  padding: 6px 16px;
+  border-radius: 20px;
+  background: rgba(232, 184, 109, 0.2);
+  border: 1px solid rgba(232, 184, 109, 0.4);
+  color: var(--color-accent);
+  font-size: 16px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  font-family: var(--font-sans);
+}
+
+.region-badge:hover {
+  background: rgba(232, 184, 109, 0.35);
+}
+
+.under-construction {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  text-align: center;
+  color: var(--color-text);
+}
+
+.under-construction h2 {
+  font-family: var(--font-serif);
+  font-size: 40px;
+  font-weight: 600;
+  letter-spacing: 6px;
+  color: var(--color-accent);
+}
+
+.under-construction p {
+  font-size: 22px;
+  margin-top: 20px;
+  color: rgba(255, 255, 255, 0.5);
+  letter-spacing: 4px;
 }
 </style>
