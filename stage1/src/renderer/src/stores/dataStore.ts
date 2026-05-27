@@ -20,6 +20,7 @@ export interface Theme {
   label: string
   background: string
   description: string
+  visible?: boolean
 }
 
 export const useDataStore = defineStore('data', () => {

@@ -42,7 +42,7 @@ onMounted(async () => {
   bgUrl.value = await resolveAssetUrl('images/background/bg1.png')
 })
 
-const themes = computed(() => dataStore.themes)
+const themes = computed(() => dataStore.themes.filter(t => t.visible !== false))
 
 function goHome() {
   router.push('/')
@@ -103,9 +103,9 @@ function navigateToSearchPage() {
 
 .themes-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   gap: 24px; /* 略微收紧网格间距（从32px到24px），在有限垂直空间内释放更多安全高度 */
-  max-width: 1400px;
+  max-width: 800px;
   width: 100%;
   max-height: 100%; /* 约束最大高度不超出父容器 */
 }

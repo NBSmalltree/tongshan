@@ -13,22 +13,23 @@
       "description": "弥勒圣地，笑迎天下的大佛文化"
     },
     {
-      "name": "minguo",
-      "label": "民国",
+      "name": "jiangshi",
+      "label": "蒋氏故里",
       "background": "images/themes/minguo.jpeg",
-      "description": "民国风情，近代奉化的风云往事"
+      "description": "溪口古镇，蒋氏故里的风云往事"
     },
     {
-      "name": "songyun",
-      "label": "宋韵",
-      "background": "images/themes/songyun.jpeg",
-      "description": "宋韵遗风，千年前的文化雅集"
-    },
-    {
-      "name": "feiyi",
-      "label": "非遗",
+      "name": "bulong",
+      "label": "布龙",
       "background": "images/themes/feiyi.jpeg",
-      "description": "非物质文化遗产，活态传承的匠心技艺"
+      "description": "奉化布龙，舞动千年的非遗龙韵"
+    },
+    {
+      "name": "other",
+      "label": "其他",
+      "background": "images/themes/songyun.jpeg",
+      "description": "其他文化素材",
+      "visible": false
     }
   ],
   "materials": [
@@ -112,7 +113,7 @@
     },
     {
       "id": "mg-001",
-      "theme": "minguo",
+      "theme": "jiangshi",
       "title": "溪口民国建筑群",
       "author": "钱学文",
       "type": "image",
@@ -125,7 +126,7 @@
     },
     {
       "id": "mg-002",
-      "theme": "minguo",
+      "theme": "jiangshi",
       "title": "蒋氏故居往事",
       "author": "孙雅琴",
       "type": "text",
@@ -138,7 +139,7 @@
     },
     {
       "id": "mg-003",
-      "theme": "minguo",
+      "theme": "jiangshi",
       "title": "民国街巷记忆",
       "author": "周伟杰",
       "type": "video",
@@ -151,7 +152,7 @@
     },
     {
       "id": "sy-001",
-      "theme": "songyun",
+      "theme": "other",
       "title": "宋韵奉化",
       "author": "吴清雅",
       "type": "text",
@@ -164,7 +165,7 @@
     },
     {
       "id": "sy-002",
-      "theme": "songyun",
+      "theme": "other",
       "title": "青瓷之美",
       "author": "郑海涛",
       "type": "image",
@@ -177,7 +178,7 @@
     },
     {
       "id": "sy-003",
-      "theme": "songyun",
+      "theme": "other",
       "title": "宋式点茶",
       "author": "冯雅芝",
       "type": "video",
@@ -190,7 +191,7 @@
     },
     {
       "id": "fy-001",
-      "theme": "feiyi",
+      "theme": "bulong",
       "title": "奉化布龙",
       "author": "朱国强",
       "type": "video",
@@ -203,7 +204,7 @@
     },
     {
       "id": "fy-002",
-      "theme": "feiyi",
+      "theme": "bulong",
       "title": "竹编技艺",
       "author": "林秀芳",
       "type": "text",
@@ -216,7 +217,7 @@
     },
     {
       "id": "fy-003",
-      "theme": "feiyi",
+      "theme": "bulong",
       "title": "千层饼制作",
       "author": "黄志明",
       "type": "image",
@@ -242,7 +243,7 @@
     },
     {
       "id": "cszp-002",
-      "theme": "feiyi",
+      "theme": "bulong",
       "title": "溪口千层饼",
       "author": "姚俊豪 张桐 邓子权",
       "type": "video",
