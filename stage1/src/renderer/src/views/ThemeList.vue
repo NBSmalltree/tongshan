@@ -240,7 +240,7 @@ function goToDetail(id: string) {
   width: 100%; height: 100%; display: flex; flex-direction: column; overflow: hidden;
   background-size: cover; background-position: center; background-color: #0b0d19;
 }
-.theme-list-header { padding: 55px 80px 10px; flex-shrink: 0; }
+.theme-list-header { padding: 55px 80px clamp(10px, 1.5vh, 24px); flex-shrink: 0; }
 .back-nav { display: flex; align-items: center; }
 .back-btn {
   background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.15);
@@ -274,7 +274,7 @@ function goToDetail(id: string) {
 .empty-state { display: flex; align-items: center; justify-content: center; height: 300px; color: rgba(255, 255, 255, 0.3); font-size: 18px; }
 
 /* 文件类型筛选栏 */
-.type-filter-bar { display: flex; align-items: center; flex-shrink: 0; padding: 0 80px; margin-top: 8px; }
+.type-filter-bar { display: flex; align-items: center; flex-shrink: 0; padding: 0 80px; margin-top: clamp(12px, 2.5vh, 40px); }
 .filter-label { font-size: 16px; color: rgba(255, 255, 255, 0.4); font-family: var(--font-sans); margin-right: 20px; white-space: nowrap; }
 .filter-capsules { display: flex; gap: 16px; }
 .filter-capsule { background: transparent; border: 1px solid rgba(255, 255, 255, 0.15); color: rgba(255, 255, 255, 0.7); padding: 10px 24px; border-radius: 20px; font-size: 16px; cursor: pointer; transition: all 0.25s ease; min-width: 60px; }
