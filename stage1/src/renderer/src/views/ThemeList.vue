@@ -10,6 +10,14 @@
       </div>
     </header>
 
+    <section class="type-filter-bar" v-if="availableTypes.length > 1">
+      <span class="filter-label">文件类型</span>
+      <div class="filter-capsules">
+        <button class="filter-capsule" :class="{ active: activeType === '' }" @click="selectType('')">全部</button>
+        <button v-for="t in availableTypes" :key="t" class="filter-capsule" :class="{ active: activeType === t }" @click="selectType(t)">{{ typeLabelMap[t] || t }}</button>
+      </div>
+    </section>
+
     <main class="theme-list-content">
       <div class="swiper-container" v-if="materials.length > 0">
         <button class="nav-arrow left-arrow" @click="scrollSwiper('left')" v-show="canScrollLeft">
@@ -47,7 +55,7 @@
       </div>
 
       <div v-if="materials.length === 0" class="empty-state">
-        <p>暂无素材</p>
+        <p>{{ activeType ? '该类型暂无素材' : '暂无素材' }}</p>
       </div>
     </main>
 
@@ -61,7 +69,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, nextTick, onUnmounted } from 'vue'
+import { ref, computed, onMounted, nextTick, onUnmounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useDataStore } from '../stores/dataStore'
 import { useAppStore } from '../stores/appStore'
@@ -87,6 +95,9 @@ let startX = 0
 let startScrollLeft = 0
 const rubberOffset = ref(0)
 
+const activeType = ref<string>('')
+const typeLabelMap: Record<string, string> = { video: '视频', audio: '音频', image: '图片', text: '文字' }
+
 onMounted(async () => {
   bgUrl.value = await resolveAssetUrl('images/background/bg1.png')
   window.addEventListener('resize', calculateScrollBounds)
@@ -102,7 +113,14 @@ const themeLabel = computed(() => {
   const theme = dataStore.themes.find(t => t.name === themeName.value)
   return theme?.label || themeName.value
 })
-const materials = computed(() => dataStore.getMaterialsByTheme(themeName.value))
+const themeMaterials = computed(() => dataStore.getMaterialsByTheme(themeName.value))
+const availableTypes = computed(() => [...new Set(themeMaterials.value.map(m => m.type))])
+const materials = computed(() => {
+  if (!activeType.value) return themeMaterials.value
+  return themeMaterials.value.filter(m => m.type === activeType.value)
+})
+
+watch(themeName, () => { activeType.value = '' })
 
 const canScrollLeft = computed(() => maxScrollLeft.value > 0 && scrollLeft.value > 5)
 const canScrollRight = computed(() => maxScrollLeft.value > 0 && scrollLeft.value < maxScrollLeft.value - 5)
@@ -197,6 +215,16 @@ function navigateToSearchPage() {
   router.push('/search')
 }
 
+function selectType(type: string) {
+  activeType.value = type
+  nextTick(() => {
+    if (swiperRef.value) {
+      swiperRef.value.scrollLeft = 0
+      calculateScrollBounds()
+    }
+  })
+}
+
 function goBack() {
   appStore.clearSearch()
   router.push('/dashboard')
@@ -244,6 +272,13 @@ function goToDetail(id: string) {
 .swiper-indicator-track { width: 160px; height: 4px; background: rgba(255, 255, 255, 0.12); border-radius: 2px; position: relative; overflow: hidden; }
 .swiper-indicator-bar { height: 100%; background: rgba(255, 255, 255, 0.75); border-radius: 2px; position: absolute; left: 0; top: 0; will-change: transform, width; }
 .empty-state { display: flex; align-items: center; justify-content: center; height: 300px; color: rgba(255, 255, 255, 0.3); font-size: 18px; }
+
+/* 文件类型筛选栏 */
+.type-filter-bar { display: flex; align-items: center; flex-shrink: 0; padding: 0 80px; margin-top: 8px; }
+.filter-label { font-size: 16px; color: rgba(255, 255, 255, 0.4); font-family: var(--font-sans); margin-right: 20px; white-space: nowrap; }
+.filter-capsules { display: flex; gap: 16px; }
+.filter-capsule { background: transparent; border: 1px solid rgba(255, 255, 255, 0.15); color: rgba(255, 255, 255, 0.7); padding: 10px 24px; border-radius: 20px; font-size: 16px; cursor: pointer; transition: all 0.25s ease; min-width: 60px; }
+.filter-capsule.active { border-color: #e8b86d; color: #ffd598; background: rgba(232, 184, 109, 0.15); box-shadow: 0 0 12px rgba(232, 184, 109, 0.3); }
 
 /* 焕新底栏样式 */
 .bottom-search-trigger-bar {
