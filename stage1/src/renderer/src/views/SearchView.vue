@@ -6,7 +6,7 @@
           <span class="arrow">←</span> 返回
         </button>
         <span class="nav-divider">|</span>
-        <h1 class="page-title">在地数字文化共创平台</h1>
+        <h1 class="page-title">在地文化数字共创平台</h1>
       </div>
       
       <div class="search-box-trigger" @click="openKeyboard">

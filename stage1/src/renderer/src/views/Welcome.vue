@@ -4,8 +4,7 @@
 
     <div class="welcome-overlay" @click="enterDashboard">
       <div class="welcome-text">
-        <h1>奉化</h1>
-        <p>在地文化数字共创平台</p>
+        <h1>在地文化数字共创平台</h1>
         <span class="touch-hint">点击屏幕任意位置进入</span>
       </div>
     </div>

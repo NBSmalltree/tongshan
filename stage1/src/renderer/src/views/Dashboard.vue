@@ -1,7 +1,7 @@
 <template>
   <div class="dashboard" :style="{ backgroundImage: bgUrl ? `url(${bgUrl})` : '' }">
     <header class="dashboard-header">
-      <h1 class="clickable-title" @click="goHome">奉化 · 在地文化数字共创平台</h1>
+      <h1 class="clickable-title" @click="goHome">在地文化数字共创平台</h1>
     </header>
 
     <main class="dashboard-content">

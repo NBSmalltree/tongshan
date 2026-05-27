@@ -1,7 +1,7 @@
 {
   "name": "tongshan-culture-platform",
   "version": "1.0.0",
-  "description": "奉化-在地文化数字共创平台（一阶段离线大屏展示系统）",
+  "description": "在地文化数字共创平台（一阶段离线大屏展示系统）",
   "main": "./out/main/index.js",
   "author": "奉化",
   "license": "MIT",
