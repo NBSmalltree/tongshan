@@ -48,7 +48,7 @@ const router = useRouter()
 const appStore = useAppStore()
 const cityTabsRef = ref<HTMLElement>()
 
-const selectedCity = ref(appStore.selectedCity || regions[0].name)
+const selectedCity = ref(appStore.selectedCity || '宁波')
 
 const currentDistricts = computed(() => {
   const region = regions.find(r => r.name === selectedCity.value)
@@ -57,6 +57,9 @@ const currentDistricts = computed(() => {
 
 onMounted(() => {
   appStore.selectedCity = selectedCity.value
+  if (!appStore.selectedDistrict) {
+    appStore.selectedDistrict = '奉化'
+  }
 })
 
 function selectCity(name: string) {
@@ -132,7 +135,7 @@ function goBack() {
 
 .city-tabs-wrapper {
   flex-shrink: 0;
-  padding: 0 60px;
+  padding: 24px 60px 0;
   margin-bottom: 24px;
 }
 
@@ -142,7 +145,7 @@ function goBack() {
   overflow-x: auto;
   scrollbar-width: none;
   -ms-overflow-style: none;
-  padding: 8px 4px;
+  padding: 12px 4px;
 }
 
 .city-tabs::-webkit-scrollbar {
@@ -177,7 +180,7 @@ function goBack() {
 
 .district-area {
   flex: 1;
-  padding: 0 60px 60px;
+  padding: 20px 60px 60px;
   overflow-y: auto;
   scrollbar-width: none;
 }
