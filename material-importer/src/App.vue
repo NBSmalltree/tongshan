@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed } from "vue";
+import { ref, onMounted } from "vue";
 import { invoke } from "@tauri-apps/api/core";
 import { open } from "@tauri-apps/plugin-dialog";
 import ConfigPanel from "./components/ConfigPanel.vue";
@@ -76,8 +76,22 @@ const selectedIndices = ref<number[]>([]);
 const statusMsg = ref("就绪");
 const loading = ref(false);
 
+// Restore saved paths on startup
+async function restorePaths() {
+  try {
+    const cfg = await invoke<{ data_json_path: string; source_folder_path: string }>("load_paths");
+    if (cfg.data_json_path) dataJsonPath.value = cfg.data_json_path;
+    if (cfg.source_folder_path) sourceFolderPath.value = cfg.source_folder_path;
+    if (dataJsonPath.value) await handleLoadData(true);
+  } catch {
+    // ignore if no saved config
+  }
+}
+
+onMounted(restorePaths);
+
 // Load data.json
-async function handleLoadData() {
+async function handleLoadData(silent = false) {
   if (!dataJsonPath.value) return;
   loading.value = true;
   try {
@@ -101,9 +115,19 @@ async function handleLoadData() {
     }
 
     statusMsg.value = `已加载 data.json，共 ${result.themes.length} 个主题，${result.materials.length} 条素材`;
+
+    // Save paths for next session
+    await invoke("save_paths", {
+      dataJsonPath: dataJsonPath.value,
+      sourceFolderPath: sourceFolderPath.value,
+    }).catch(() => {});
+
+    if (!silent) {
+      alert(`已成功加载 data.json\n主题数：${result.themes.length}\n素材数：${result.materials.length}`);
+    }
   } catch (e: any) {
     statusMsg.value = "加载失败";
-    alert("加载 data.json 失败：\n" + String(e));
+    if (!silent) alert("加载 data.json 失败：\n" + String(e));
   } finally {
     loading.value = false;
   }

@@ -2,6 +2,7 @@ use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::fs;
 use std::path::Path;
+use tauri::Manager;
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
@@ -391,6 +392,43 @@ fn execute_import(
     })
 }
 
+// ── Paths Config ─────────────────────────────────────────────────────────────
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+struct PathsConfig {
+    data_json_path: String,
+    source_folder_path: String,
+}
+
+fn config_path(app: &tauri::AppHandle) -> Result<std::path::PathBuf, String> {
+    let dir = app
+        .path()
+        .app_config_dir()
+        .map_err(|e| format!("获取配置目录失败: {}", e))?;
+    fs::create_dir_all(&dir).map_err(|e| format!("创建配置目录失败: {}", e))?;
+    Ok(dir.join("paths.json"))
+}
+
+#[tauri::command]
+fn save_paths(app: tauri::AppHandle, data_json_path: String, source_folder_path: String) -> Result<(), String> {
+    let path = config_path(&app)?;
+    let cfg = PathsConfig { data_json_path, source_folder_path };
+    let json = serde_json::to_string_pretty(&cfg).map_err(|e| format!("序列化失败: {}", e))?;
+    fs::write(&path, json).map_err(|e| format!("写入配置失败: {}", e))?;
+    Ok(())
+}
+
+#[tauri::command]
+fn load_paths(app: tauri::AppHandle) -> Result<PathsConfig, String> {
+    let path = config_path(&app)?;
+    if !path.exists() {
+        return Ok(PathsConfig::default());
+    }
+    let content = fs::read_to_string(&path).map_err(|e| format!("读取配置失败: {}", e))?;
+    let cfg: PathsConfig = serde_json::from_str(&content).map_err(|e| format!("解析配置失败: {}", e))?;
+    Ok(cfg)
+}
+
 // ── App Setup ────────────────────────────────────────────────────────────────
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
@@ -404,6 +442,8 @@ pub fn run() {
             get_themes_with_count,
             scan_source_folder,
             execute_import,
+            save_paths,
+            load_paths,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

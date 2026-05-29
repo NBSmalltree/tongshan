@@ -60,6 +60,9 @@ async function browseSourceFolder() {
             readonly
           />
           <button class="btn btn-outline" @click="browseDataJson">浏览</button>
+          <button class="btn btn-primary" @click="emit('load-data')" :disabled="loading">
+            加载
+          </button>
         </div>
       </div>
       <div class="config-item flex-grow">
@@ -102,11 +105,6 @@ async function browseSourceFolder() {
             {{ t.label }} ({{ t.count }} 条)
           </option>
         </select>
-      </div>
-      <div class="config-item">
-        <button class="btn btn-primary" @click="emit('load-data')" :disabled="loading">
-          加载 data.json
-        </button>
       </div>
     </div>
   </div>
