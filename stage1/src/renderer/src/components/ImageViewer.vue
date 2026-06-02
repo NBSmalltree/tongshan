@@ -91,8 +91,8 @@ onMounted(() => {
 }
 
 .viewer-image {
-  max-width: 90%;
-  max-height: 90%;
+  width: 100%;
+  height: 100%;
   object-fit: contain;
   border-radius: var(--radius-sm);
   box-shadow: var(--shadow-card);
