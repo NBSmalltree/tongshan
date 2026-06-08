@@ -42,6 +42,23 @@ jobs:
         working-directory: material-importer
         run: npm install
 
+      - name: Verify and fix icons
+        shell: bash
+        run: |
+          echo "=== Checking icon files ==="
+          ls -la material-importer/src-tauri/icons/
+          file material-importer/src-tauri/icons/icon.ico || true
+          xxd material-importer/src-tauri/icons/icon.ico | head -3 || true
+          echo "=== Regenerating with ImageMagick ==="
+          dir="material-importer/src-tauri/icons"
+          magick -size 32x32 xc:"#3C78D8" "$dir/32x32.png"
+          magick -size 128x128 xc:"#3C78D8" "$dir/128x128.png"
+          magick -size 256x256 xc:"#3C78D8" "$dir/icon.png"
+          magick "$dir/32x32.png" "$dir/128x128.png" "$dir/icon.png" "$dir/icon.ico"
+          echo "=== After regeneration ==="
+          ls -la "$dir/"
+          file "$dir/icon.ico"
+
       - name: Build Tauri app
         working-directory: material-importer
         run: npm run tauri build
