@@ -48,8 +48,6 @@ jobs:
         working-directory: stage1
         shell: bash
         run: npx electron-vite build && npx electron-builder --win --config electron-builder.yml
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Upload Windows artifacts
         uses: actions/upload-artifact@v4
@@ -99,7 +97,6 @@ jobs:
         run: npx electron-vite build && npx electron-builder --mac --config electron-builder.yml
         env:
           CSC_IDENTITY_AUTO_DISCOVERY: false
-          CSC_LINK: ""
 
       - name: Upload macOS artifacts
         uses: actions/upload-artifact@v4
