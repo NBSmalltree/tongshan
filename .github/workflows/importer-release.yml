@@ -54,13 +54,51 @@ jobs:
         shell: bash
         run: npm ci
 
-      - name: Build & Package (Windows)
-        uses: tauri-apps/tauri-action@v0
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Generate .ico for Windows
+        shell: pwsh
+        run: |
+          Add-Type -AssemblyName System.Drawing
+          $dir = "material-importer/src-tauri/icons"
+
+          # 生成 PNG（RGBA）
+          foreach ($s in @(32, 128, 512)) {
+            $bmp = New-Object System.Drawing.Bitmap($s, $s)
+            $g = [System.Drawing.Graphics]::FromImage($bmp)
+            $g.Clear([System.Drawing.Color]::FromArgb(60, 120, 216))
+            $g.Dispose()
+            $bmp.Save("$dir/${s}x${s}.png", [System.Drawing.Imaging.ImageFormat]::Png)
+            $bmp.Dispose()
+          }
+
+          # 用 .NET Drawing 生成标准 ICO
+          $src = New-Object System.Drawing.Bitmap("$dir/32x32.png")
+          $hIcon = $src.GetHicon()
+          $ico = [System.Drawing.Icon]::FromHandle($hIcon)
+          $fs = [System.IO.File]::Create("$dir/icon.ico")
+          $ico.Save($fs)
+          $fs.Close()
+          [System.Drawing.Icon]::DestroyHandle($hIcon)
+          $src.Dispose()
+
+          # 验证
+          if (Test-Path "$dir/icon.ico") {
+            Write-Host "icon.ico created: $((Get-Item "$dir/icon.ico").Length) bytes"
+          } else {
+            Write-Error "icon.ico NOT created!"
+            exit 1
+          }
+
+      - name: Install Tauri CLI
+        uses: actions/cache@v4
         with:
-          projectPath: material-importer
-          args: "--target x86_64-pc-windows-msvc"
+          path: ~/.cargo/bin/cargo-tauri.exe
+          key: tauri-cli-win
+
+      - name: Build & Package (Windows)
+        shell: bash
+        run: |
+          cargo install tauri-cli --version "^2" 2>/dev/null || true
+          cd material-importer && cargo tauri build --target x86_64-pc-windows-msvc
 
       - name: Upload Windows artifacts
         uses: actions/upload-artifact@v4
