@@ -1,0 +1,155 @@
+name: Material Importer Release
+
+on:
+  push:
+    tags:
+      - 'importer/v*'
+
+permissions:
+  contents: write
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: material-importer/package-lock.json
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: x86_64-pc-windows-msvc
+
+      - name: Rust cache
+        uses: swatinem/rust-cache@v2
+        with:
+          workspaces: material-importer/src-tauri
+
+      - name: Extract version from tag
+        shell: bash
+        run: |
+          TAG_NAME="${GITHUB_REF#refs/tags/importer/}"
+          VERSION="${TAG_NAME#v}"
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+
+      - name: Update tauri.conf.json version
+        working-directory: material-importer/src-tauri
+        shell: bash
+        run: |
+          node -e "
+            const fs = require('fs');
+            const cfg = JSON.parse(fs.readFileSync('tauri.conf.json', 'utf8'));
+            cfg.version = '${{ env.VERSION }}';
+            fs.writeFileSync('tauri.conf.json', JSON.stringify(cfg, null, 2) + '\n');
+          "
+
+      - name: Install frontend dependencies
+        working-directory: material-importer
+        shell: bash
+        run: npm ci
+
+      - name: Build & Package (Windows)
+        uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          projectPath: material-importer
+          args: "--target x86_64-pc-windows-msvc"
+
+      - name: Upload Windows artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: importer-windows
+          path: material-importer/src-tauri/target/x86_64-pc-windows-msvc/release/bundle/nsis/*.exe
+          if-no-files-found: error
+
+  build-macos:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: material-importer/package-lock.json
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Rust cache
+        uses: swatinem/rust-cache@v2
+        with:
+          workspaces: material-importer/src-tauri
+
+      - name: Extract version from tag
+        shell: bash
+        run: |
+          TAG_NAME="${GITHUB_REF#refs/tags/importer/}"
+          VERSION="${TAG_NAME#v}"
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+
+      - name: Update tauri.conf.json version
+        working-directory: material-importer/src-tauri
+        shell: bash
+        run: |
+          node -e "
+            const fs = require('fs');
+            const cfg = JSON.parse(fs.readFileSync('tauri.conf.json', 'utf8'));
+            cfg.version = '${{ env.VERSION }}';
+            fs.writeFileSync('tauri.conf.json', JSON.stringify(cfg, null, 2) + '\n');
+          "
+
+      - name: Install frontend dependencies
+        working-directory: material-importer
+        shell: bash
+        run: npm ci
+
+      - name: Build & Package (macOS)
+        uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          projectPath: material-importer
+
+      - name: Upload macOS artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: importer-macos
+          path: |
+            material-importer/src-tauri/target/release/bundle/dmg/*.dmg
+            material-importer/src-tauri/target/release/bundle/macos/*.app.tar.gz
+          if-no-files-found: error
+
+  release:
+    needs: [build-windows, build-macos]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          merge-multiple: true
+          path: artifacts
+
+      - name: Extract version from tag
+        shell: bash
+        run: |
+          TAG_NAME="${GITHUB_REF#refs/tags/importer/}"
+          VERSION="${TAG_NAME#v}"
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: importer/v${{ env.VERSION }}
+          name: "素材导入工具 v${{ env.VERSION }}"
+          files: artifacts/*
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
