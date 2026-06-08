@@ -54,15 +54,6 @@ jobs:
         shell: bash
         run: npm ci
 
-      - name: Generate icon files
-        shell: bash
-        run: |
-          mkdir -p material-importer/src-tauri/icons
-          magick -size 32x32 xc:"#3C78D8" material-importer/src-tauri/icons/32x32.png
-          magick -size 128x128 xc:"#3C78D8" material-importer/src-tauri/icons/128x128.png
-          magick -size 512x512 xc:"#3C78D8" material-importer/src-tauri/icons/icon.png
-          magick material-importer/src-tauri/icons/icon.png material-importer/src-tauri/icons/icon.ico
-
       - name: Build & Package (Windows)
         uses: tauri-apps/tauri-action@v0
         env:
