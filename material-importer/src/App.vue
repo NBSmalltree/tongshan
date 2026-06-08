@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
+import { ref, computed, onMounted } from "vue";
 import { invoke } from "@tauri-apps/api/core";
-import { open } from "@tauri-apps/plugin-dialog";
 import ConfigPanel from "./components/ConfigPanel.vue";
 import MaterialTree from "./components/MaterialTree.vue";
 import PreviewTable from "./components/PreviewTable.vue";
+import WelcomePanel from "./components/WelcomePanel.vue";
 
 interface Theme {
   name: string;
@@ -64,10 +64,11 @@ interface ThemeWithCount {
 }
 
 // State
-const dataJsonPath = ref("");
+const resourcesDir = ref("");
 const sourceFolderPath = ref("");
 const prefix = ref("");
 const selectedTheme = ref("");
+const activeTab = ref<"material" | "welcome">("material");
 const data = ref<DataJson | null>(null);
 const themesWithCount = ref<ThemeWithCount[]>([]);
 const prefixStats = ref<PrefixInfo[]>([]);
@@ -76,13 +77,27 @@ const selectedIndices = ref<number[]>([]);
 const statusMsg = ref("就绪");
 const loading = ref(false);
 
+// 推导 data.json 路径
+const dataJsonPath = computed(() => {
+  if (!resourcesDir.value) return "";
+  return resourcesDir.value.replace(/[\\/]+$/, "") + "/data.json";
+});
+
 // Restore saved paths on startup
 async function restorePaths() {
   try {
-    const cfg = await invoke<{ data_json_path: string; source_folder_path: string }>("load_paths");
-    if (cfg.data_json_path) dataJsonPath.value = cfg.data_json_path;
+    const cfg = await invoke<{ resources_dir: string; data_json_path: string; source_folder_path: string }>("load_paths");
+    // 优先使用 resources_dir，兼容旧版 data_json_path
+    if (cfg.resources_dir) {
+      resourcesDir.value = cfg.resources_dir;
+    } else if (cfg.data_json_path) {
+      // 旧版兼容：从 data_json_path 推导
+      const parts = cfg.data_json_path.replace(/[\\/]+$/, "").split(/[/\\]/);
+      parts.pop(); // 移除 data.json
+      resourcesDir.value = parts.join("/");
+    }
     if (cfg.source_folder_path) sourceFolderPath.value = cfg.source_folder_path;
-    if (dataJsonPath.value) await handleLoadData(true);
+    if (resourcesDir.value) await handleLoadData(true);
   } catch {
     // ignore if no saved config
   }
@@ -118,7 +133,7 @@ async function handleLoadData(silent = false) {
 
     // Save paths for next session
     await invoke("save_paths", {
-      dataJsonPath: dataJsonPath.value,
+      resourcesDir: resourcesDir.value,
       sourceFolderPath: sourceFolderPath.value,
     }).catch(() => {});
 
@@ -248,17 +263,18 @@ async function handleImport() {
 <template>
   <div class="app">
     <ConfigPanel
-      v-model:dataJsonPath="dataJsonPath"
+      v-model:resourcesDir="resourcesDir"
       v-model:sourceFolderPath="sourceFolderPath"
       v-model:prefix="prefix"
       v-model:selectedTheme="selectedTheme"
+      v-model:activeTab="activeTab"
       :themes="themesWithCount"
       :loading="loading"
       @load-data="handleLoadData"
       @scan="handleScan"
     />
 
-    <div class="main-area">
+    <div class="main-area" v-if="activeTab === 'material'">
       <MaterialTree :data="data" :prefixStats="prefixStats" />
       <PreviewTable
         :scanResult="scanResult"
@@ -268,6 +284,14 @@ async function handleImport() {
         @import="handleImport"
       />
     </div>
+
+    <WelcomePanel
+      v-else
+      :resourcesDir="resourcesDir"
+      :loading="loading"
+      @update:loading="loading = $event"
+      @status-msg="statusMsg = $event"
+    />
 
     <div class="status-bar">
       <span>{{ statusMsg }}</span>

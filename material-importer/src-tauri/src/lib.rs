@@ -392,11 +392,76 @@ fn execute_import(
     })
 }
 
+// ── Config.json Commands ─────────────────────────────────────────────────────
+
+#[tauri::command]
+fn load_config_json(path: String) -> Result<serde_json::Value, String> {
+    if !Path::new(&path).exists() {
+        // 文件不存在时返回空对象
+        return Ok(serde_json::json!({}));
+    }
+    let content = fs::read_to_string(&path).map_err(|e| format!("读取 config.json 失败: {}", e))?;
+    let val: serde_json::Value =
+        serde_json::from_str(&content).map_err(|e| format!("解析 config.json 失败: {}", e))?;
+    Ok(val)
+}
+
+#[tauri::command]
+fn update_welcome_images(config_path: String, image_filenames: Vec<String>) -> Result<serde_json::Value, String> {
+    let path = Path::new(&config_path);
+
+    // 读取现有配置（不存在则创建空对象）
+    let mut config: serde_json::Value = if path.exists() {
+        let content = fs::read_to_string(path).map_err(|e| format!("读取 config.json 失败: {}", e))?;
+        serde_json::from_str(&content).map_err(|e| format!("解析 config.json 失败: {}", e))?
+    } else {
+        serde_json::json!({})
+    };
+
+    // 构建 welcomeImages 路径列表
+    let images: Vec<serde_json::Value> = image_filenames
+        .iter()
+        .map(|f| serde_json::Value::String(format!("images/welcome/{}", f)))
+        .collect();
+
+    config["welcomeImages"] = serde_json::Value::Array(images);
+
+    let json = serde_json::to_string_pretty(&config).map_err(|e| format!("序列化失败: {}", e))?;
+    fs::write(path, json).map_err(|e| format!("写入 config.json 失败: {}", e))?;
+
+    Ok(config)
+}
+
+#[tauri::command]
+fn import_welcome_images(target_dir: String, source_files: Vec<String>) -> Result<Vec<String>, String> {
+    let dest = Path::new(&target_dir);
+    fs::create_dir_all(dest).map_err(|e| format!("创建目录失败: {}", e))?;
+
+    let mut imported = Vec::new();
+
+    for src_path_str in &source_files {
+        let src = Path::new(src_path_str);
+        let fname = src
+            .file_name()
+            .ok_or_else(|| format!("无法获取文件名: {}", src_path_str))?;
+        let target = dest.join(fname);
+
+        fs::copy(src, &target).map_err(|e| format!("复制文件失败 {}: {}", src_path_str, e))?;
+        imported.push(fname.to_string_lossy().to_string());
+    }
+
+    Ok(imported)
+}
+
 // ── Paths Config ─────────────────────────────────────────────────────────────
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 struct PathsConfig {
+    #[serde(default)]
+    resources_dir: String,
+    #[serde(default)]
     data_json_path: String,
+    #[serde(default)]
     source_folder_path: String,
 }
 
@@ -410,9 +475,13 @@ fn config_path(app: &tauri::AppHandle) -> Result<std::path::PathBuf, String> {
 }
 
 #[tauri::command]
-fn save_paths(app: tauri::AppHandle, data_json_path: String, source_folder_path: String) -> Result<(), String> {
+fn save_paths(app: tauri::AppHandle, resources_dir: String, source_folder_path: String) -> Result<(), String> {
     let path = config_path(&app)?;
-    let cfg = PathsConfig { data_json_path, source_folder_path };
+    let cfg = PathsConfig {
+        resources_dir,
+        data_json_path: String::new(),
+        source_folder_path,
+    };
     let json = serde_json::to_string_pretty(&cfg).map_err(|e| format!("序列化失败: {}", e))?;
     fs::write(&path, json).map_err(|e| format!("写入配置失败: {}", e))?;
     Ok(())
@@ -425,7 +494,15 @@ fn load_paths(app: tauri::AppHandle) -> Result<PathsConfig, String> {
         return Ok(PathsConfig::default());
     }
     let content = fs::read_to_string(&path).map_err(|e| format!("读取配置失败: {}", e))?;
-    let cfg: PathsConfig = serde_json::from_str(&content).map_err(|e| format!("解析配置失败: {}", e))?;
+    let mut cfg: PathsConfig = serde_json::from_str(&content).map_err(|e| format!("解析配置失败: {}", e))?;
+
+    // 兼容旧版配置：如果 resources_dir 为空但 data_json_path 有值，自动推导
+    if cfg.resources_dir.is_empty() && !cfg.data_json_path.is_empty() {
+        if let Some(parent) = Path::new(&cfg.data_json_path).parent() {
+            cfg.resources_dir = parent.to_string_lossy().to_string();
+        }
+    }
+
     Ok(cfg)
 }
 
@@ -442,6 +519,9 @@ pub fn run() {
             get_themes_with_count,
             scan_source_folder,
             execute_import,
+            load_config_json,
+            update_welcome_images,
+            import_welcome_images,
             save_paths,
             load_paths,
         ])

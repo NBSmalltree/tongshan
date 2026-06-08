@@ -1,11 +1,9 @@
 {
-  "resolution": "1920x1080",
-  "kiosk": true,
   "fullscreen": true,
+  "kiosk": true,
+  "resolution": "1920x1080",
   "welcomeImages": [
     "images/welcome/slide1.jpg",
-    "images/welcome/slide2.jpg",
-    "images/welcome/slide3.jpeg",
     "images/welcome/slide4.jpeg",
     "images/welcome/slide5.jpg"
   ]

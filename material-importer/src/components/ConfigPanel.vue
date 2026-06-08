@@ -7,31 +7,33 @@ interface ThemeWithCount {
   count: number;
 }
 
-const props = defineProps<{
-  dataJsonPath: string;
+defineProps<{
+  resourcesDir: string;
   sourceFolderPath: string;
   prefix: string;
   selectedTheme: string;
   themes: ThemeWithCount[];
   loading: boolean;
+  activeTab: "material" | "welcome";
 }>();
 
 const emit = defineEmits<{
-  "update:dataJsonPath": [value: string];
+  "update:resourcesDir": [value: string];
   "update:sourceFolderPath": [value: string];
   "update:prefix": [value: string];
   "update:selectedTheme": [value: string];
   "load-data": [];
   "scan": [];
+  "update:activeTab": [value: "material" | "welcome"];
 }>();
 
-async function browseDataJson() {
-  const file = await open({
-    title: "选择 data.json 文件",
-    filters: [{ name: "JSON 文件", extensions: ["json"] }],
+async function browseResourcesDir() {
+  const dir = await open({
+    title: "选择 stage1/resources 工程目录",
+    directory: true,
   });
-  if (file) {
-    emit("update:dataJsonPath", file);
+  if (dir) {
+    emit("update:resourcesDir", dir);
   }
 }
 
@@ -50,21 +52,41 @@ async function browseSourceFolder() {
   <div class="config-panel">
     <div class="config-row">
       <div class="config-item flex-grow">
-        <label>data.json 路径</label>
+        <label>工程资源目录</label>
         <div class="input-group">
           <input
             type="text"
-            :value="dataJsonPath"
-            @input="emit('update:dataJsonPath', ($event.target as HTMLInputElement).value)"
-            placeholder="选择 data.json 文件..."
+            :value="resourcesDir"
+            @input="emit('update:resourcesDir', ($event.target as HTMLInputElement).value)"
+            placeholder="选择 stage1/resources 目录..."
             readonly
           />
-          <button class="btn btn-outline" @click="browseDataJson">浏览</button>
-          <button class="btn btn-primary" @click="emit('load-data')" :disabled="loading">
+          <button class="btn btn-outline" @click="browseResourcesDir">浏览</button>
+          <button class="btn btn-primary" @click="emit('load-data')" :disabled="loading || !resourcesDir">
             加载
           </button>
         </div>
       </div>
+    </div>
+
+    <div class="tab-bar">
+      <button
+        class="tab-btn"
+        :class="{ active: activeTab === 'material' }"
+        @click="emit('update:activeTab', 'material')"
+      >
+        素材导入
+      </button>
+      <button
+        class="tab-btn"
+        :class="{ active: activeTab === 'welcome' }"
+        @click="emit('update:activeTab', 'welcome')"
+      >
+        欢迎轮播图
+      </button>
+    </div>
+
+    <div class="config-row" v-if="activeTab === 'material'">
       <div class="config-item flex-grow">
         <label>素材文件夹</label>
         <div class="input-group">
@@ -81,8 +103,6 @@ async function browseSourceFolder() {
           </button>
         </div>
       </div>
-    </div>
-    <div class="config-row">
       <div class="config-item">
         <label>ID 前缀</label>
         <input
@@ -114,17 +134,14 @@ async function browseSourceFolder() {
 .config-panel {
   background: #fff;
   border-bottom: 1px solid #e0e0e0;
-  padding: 12px 16px;
+  padding: 12px 16px 0;
 }
 
 .config-row {
   display: flex;
   gap: 16px;
   align-items: flex-end;
-  margin-bottom: 8px;
-}
-.config-row:last-child {
-  margin-bottom: 0;
+  margin-bottom: 10px;
 }
 
 .config-item {
@@ -205,5 +222,34 @@ input[type="text"] {
 }
 .btn-outline:hover:not(:disabled) {
   background: #f5f5f5;
+}
+
+.tab-bar {
+  display: flex;
+  gap: 0;
+  margin-bottom: 10px;
+  border-bottom: 2px solid #e0e0e0;
+}
+
+.tab-btn {
+  padding: 8px 20px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #666;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+  cursor: pointer;
+  transition: color 0.2s, border-color 0.2s;
+}
+
+.tab-btn:hover {
+  color: #333;
+}
+
+.tab-btn.active {
+  color: #1976d2;
+  border-bottom-color: #1976d2;
 }
 </style>
