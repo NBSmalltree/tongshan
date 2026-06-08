@@ -77,7 +77,7 @@ jobs:
           $fs = [System.IO.File]::Create("$dir/icon.ico")
           $ico.Save($fs)
           $fs.Close()
-          [System.Drawing.Icon]::DestroyHandle($hIcon)
+          $ico.Dispose()
           $src.Dispose()
 
           # 验证
