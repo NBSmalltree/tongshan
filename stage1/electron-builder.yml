@@ -25,6 +25,14 @@ win:
     - nsis
   artifactName: "${productName}-Setup-${version}.${ext}"
 
+mac:
+  target:
+    - dmg
+  artifactName: "${productName}-${version}.${ext}"
+
+dmg:
+  artifactName: "${productName}-${version}.${ext}"
+
 nsis:
   oneClick: true
   perMachine: true
