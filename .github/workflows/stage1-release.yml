@@ -47,7 +47,7 @@ jobs:
       - name: Build & Package (Windows)
         working-directory: stage1
         shell: bash
-        run: npx electron-vite build && npx electron-builder --win --config electron-builder.yml
+        run: npx electron-vite build && npx electron-builder --win --config electron-builder.yml --publish never
 
       - name: Upload Windows artifacts
         uses: actions/upload-artifact@v4
@@ -94,7 +94,7 @@ jobs:
       - name: Build & Package (macOS)
         working-directory: stage1
         shell: bash
-        run: npx electron-vite build && npx electron-builder --mac --config electron-builder.yml
+        run: npx electron-vite build && npx electron-builder --mac --config electron-builder.yml --publish never
         env:
           CSC_IDENTITY_AUTO_DISCOVERY: false
 
