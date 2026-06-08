@@ -26,10 +26,28 @@ let exitTapCount = 0
 let exitTapTimer: ReturnType<typeof setTimeout> | null = null
 
 onMounted(async () => {
-  for (let i = 1; i <= 4; i++) {
-    const url = await resolveAssetUrl(`images/welcome/slide${i}.png`)
+  // 优先从 config.json 读取轮播图列表
+  let imagePaths: string[] = []
+  try {
+    const config = await window.electronAPI.readConfigJson()
+    if (config?.welcomeImages?.length) {
+      imagePaths = config.welcomeImages
+    }
+  } catch {}
+
+  for (const path of imagePaths) {
+    const url = await resolveAssetUrl(path)
     if (url) welcomeImages.value.push(url)
   }
+
+  // 配置的图片全部无效时，回退到默认 slide1~4
+  if (welcomeImages.value.length === 0) {
+    for (let i = 1; i <= 4; i++) {
+      const url = await resolveAssetUrl(`images/welcome/slide${i}.png`)
+      if (url) welcomeImages.value.push(url)
+    }
+  }
+
   if (welcomeImages.value.length === 0) {
     welcomeImages.value = ['#2D1B14', '#1A1A2E', '#0D0D0D']
   }

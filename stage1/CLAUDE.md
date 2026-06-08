@@ -52,7 +52,21 @@ Three-process Electron app using `electron-vite`:
 
 `resources/data.json` contains 5 themes and ~17-19 materials. Each material has: `id`, `theme`, `title`, `author`, `type` (text/image/video/audio), `category`, `region`, `period`, `cover`, `content`, `tags`.
 
-`resources/config.json` controls runtime behavior: `resolution` (e.g. "1920x1080"), `kiosk` (bool), `fullscreen` (bool).
+`resources/config.json` controls runtime behavior: `resolution` (e.g. "1920x1080"), `kiosk` (bool), `fullscreen` (bool), `welcomeImages` (string[], paths to carousel images, resolved via `resolve-asset`).
+
+### 首页轮播图配置
+
+在 `config.json` 的 `welcomeImages` 数组中配置首页轮播图路径，路径相对于 app 根（由 `resolve-asset` 依次查找 `resources/` 和 `static/`）。示例：
+
+```json
+"welcomeImages": [
+  "images/welcome/slide1.png",
+  "images/welcome/slide2.png"
+]
+```
+
+- 不配置或路径全部无效时，回退到默认的 `images/welcome/slide1~4.png`，再无图片则使用纯色背景
+- 建议图片分辨率 1920×1080，png/jpg 格式，单张 ≤ 2MB
 
 ## Packaging
 
