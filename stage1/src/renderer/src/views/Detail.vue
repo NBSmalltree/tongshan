@@ -47,10 +47,19 @@
     </div>
 
     <div class="detail-info">
-      <h2>{{ material.title }}</h2>
-      <p>{{ material.author }}</p>
-      <div class="detail-tags">
-        <span v-for="tag in material.tags" :key="tag" class="tag">{{ tag }}</span>
+      <div class="detail-info-left">
+        <h2>{{ material.title }}</h2>
+        <p>{{ material.author }}</p>
+        <div class="detail-tags">
+          <span v-for="tag in material.tags" :key="tag" class="tag">{{ tag }}</span>
+        </div>
+      </div>
+      <div class="detail-info-right" v-if="material.price">
+        <span class="detail-price">¥{{ material.price }}</span>
+        <button class="detail-download-btn" @click="handleDownload">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+          <span>下载</span>
+        </button>
       </div>
     </div>
   </div>
@@ -92,6 +101,10 @@ onMounted(async () => {
 
 function goBack() {
   router.back()
+}
+
+function handleDownload() {
+  alert('下载功能开发中')
 }
 </script>
 
@@ -144,6 +157,49 @@ function goBack() {
   padding: 24px 60px;
   background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
   z-index: 10;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 32px;
+}
+
+.detail-info-left {
+  flex: 1;
+  min-width: 0;
+}
+
+.detail-info-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-shrink: 0;
+}
+
+.detail-price {
+  font-size: 32px;
+  font-weight: 700;
+  color: #ffd598;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+.detail-download-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 28px;
+  border: none;
+  border-radius: 8px;
+  background: var(--color-accent);
+  color: var(--color-primary);
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.detail-download-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(232, 184, 109, 0.4);
 }
 
 .detail-info h2 {

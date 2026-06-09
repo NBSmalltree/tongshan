@@ -13,6 +13,7 @@ export interface Material {
   cover: string
   content: string
   tags: string[]
+  price?: number
 }
 
 export interface Theme {

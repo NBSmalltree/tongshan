@@ -14,9 +14,17 @@
     </div>
     <div class="material-card-overlay">
       <span class="material-type">{{ typeLabel }}</span>
-      <div class="material-info">
-        <h3>{{ material.title }}</h3>
-        <p>{{ material.author }}</p>
+      <div class="material-bottom">
+        <div class="material-info">
+          <h3>{{ material.title }}</h3>
+          <p>{{ material.author }}</p>
+        </div>
+        <div class="material-action" v-if="material.price">
+          <span class="material-price">¥{{ material.price }}</span>
+          <button class="download-btn" @click.stop="handleDownload" title="下载">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -58,6 +66,10 @@ const fileExt = computed(() => {
   const dot = c.lastIndexOf('.')
   return dot >= 0 ? c.substring(dot + 1).toLowerCase() : ''
 })
+
+function handleDownload() {
+  alert('下载功能开发中')
+}
 </script>
 
 <style scoped>
@@ -85,7 +97,7 @@ const fileExt = computed(() => {
   border-radius: inherit;
   background: linear-gradient(
     to top,
-    rgba(0, 0, 0, 0.8) 0%,
+    rgba(0, 0, 0, 0.85) 0%,
     rgba(0, 0, 0, 0.05) 50%,
     rgba(0, 0, 0, 0.3) 100%
   );
@@ -120,6 +132,55 @@ const fileExt = computed(() => {
 .material-info p {
   font-size: 13px;
   color: rgba(255, 255, 255, 0.6);
+}
+
+.material-bottom {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.material-bottom .material-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.material-action {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.material-price {
+  font-family: var(--font-sans);
+  font-size: 20px;
+  font-weight: 700;
+  color: #ffd598;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+  white-space: nowrap;
+}
+
+.download-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(4px);
+  color: rgba(255, 255, 255, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.download-btn:hover {
+  background: var(--color-accent);
+  color: var(--color-primary);
+  transform: scale(1.1);
 }
 
 .file-fallback {
