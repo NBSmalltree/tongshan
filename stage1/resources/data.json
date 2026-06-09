@@ -3,31 +3,36 @@
     {
       "name": "shuimitao",
       "label": "水蜜桃",
-      "background": "images/themes/shuimitao.jpeg",
+      "background": "images/themes/shuimitao-card.jpg",
+      "pageBackground": "images/themes/shuimitao-page.jpg",
       "description": "奉化水蜜桃，千年桃乡的甜蜜传承"
     },
     {
       "name": "mile",
       "label": "弥勒",
       "background": "images/themes/mile.jpeg",
+      "pageBackground": "",
       "description": "弥勒圣地，笑迎天下的大佛文化"
     },
     {
       "name": "jiangshi",
       "label": "蒋氏故里",
       "background": "images/themes/minguo.jpeg",
+      "pageBackground": "",
       "description": "溪口古镇，蒋氏故里的风云往事"
     },
     {
       "name": "bulong",
       "label": "布龙",
       "background": "images/themes/feiyi.jpeg",
+      "pageBackground": "",
       "description": "奉化布龙，舞动千年的非遗龙韵"
     },
     {
       "name": "other",
       "label": "其他",
       "background": "images/themes/songyun.jpeg",
+      "pageBackground": "",
       "description": "其他文化素材",
       "visible": false
     }

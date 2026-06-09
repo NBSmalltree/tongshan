@@ -85,7 +85,7 @@ resources/
 ├── images/
 │   ├── covers/       ← 封面缩略图（所有素材都需要）
 │   ├── materials/    ← 图片类素材的正文大图
-│   └── themes/       ← 主题背景图（一般不需要改动）
+│   └── themes/       ← 主题背景图（卡片图 + 专题页背景图）
 ├── videos/           ← 视频类素材文件
 ├── audios/           ← 音频类素材文件
 ├── data.json         ← 素材数据清单（本文档重点）
@@ -182,3 +182,56 @@ ID 由 **主题前缀** + **短横线** + **三位序号** 组成：
 4. **视频格式**：推荐使用 `.mp4` (H.264 编码)，兼容性最好。
 5. **音频格式**：推荐使用 `.mp3` 格式。
 6. **新增主题**：如需新增主题，除在 `themes` 数组中添加记录外，还需在 `images/themes/` 下放入对应的背景图。
+
+---
+
+## 🖼️ 专题图片管理
+
+每个主题（theme）可以配置两张图片：
+
+| 字段 | 用途 | 建议分辨率 | 说明 |
+|------|------|-----------|------|
+| `background` | Dashboard 主题卡片图 | 800×600 | 首页网格中展示的卡片背景 |
+| `pageBackground` | ThemeList 专题页背景 | 1920×1080 | 进入专题后全屏铺满的背景图 |
+
+### data.json 中的 theme 配置示例
+
+```json
+{
+  "name": "mile",
+  "label": "弥勒",
+  "background": "images/themes/mile.jpeg",
+  "pageBackground": "images/themes/mile-bg.png",
+  "description": "弥勒圣地，笑迎天下的大佛文化"
+}
+```
+
+- `background`：Dashboard 首页该主题卡片的背景图，必填
+- `pageBackground`：专题详情页的全屏背景图，选填。留空时使用默认背景
+
+### 图片存放位置
+
+专题图片统一存放在 `images/themes/` 目录下：
+
+```
+resources/images/themes/
+├── mile.jpeg        ← 弥勒卡片图
+├── mile-bg.png      ← 弥勒页面背景
+├── feiyi.jpeg       ← 布龙卡片图
+├── feiyi-bg.png     ← 布龙页面背景
+├── minguo.jpeg      ← 蒋氏故里卡片图
+├── shuimitao.jpeg   ← 水蜜桃卡片图
+└── songyun.jpeg     ← 其他卡片图
+```
+
+### 替换方式
+
+**方式一：使用 material-importer 工具（推荐）**
+
+打开 material-importer → 切换到"专题图片"Tab → 选择要替换的图片 → 保存配置。
+
+**方式二：手动替换**
+
+1. 将新图片放入 `resources/images/themes/` 目录
+2. 编辑 `data.json`，修改对应 theme 的 `background` 或 `pageBackground` 字段为新文件名
+3. 重启展示程序使更改生效

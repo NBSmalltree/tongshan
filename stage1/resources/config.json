@@ -1,6 +1,6 @@
 {
   "fullscreen": true,
-  "kiosk": true,
+  "kiosk": false,
   "resolution": "1920x1080",
   "welcomeImages": [
     "images/welcome/slide1.jpg",

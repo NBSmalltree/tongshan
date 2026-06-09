@@ -121,7 +121,7 @@ function getResourcesPath(): string {
 
 function registerStaticProtocol(): void {
   protocol.handle('static', (request) => {
-    const relativePath = request.url.replace('static://', '')
+    const relativePath = decodeURIComponent(request.url.replace('static://', ''))
 
     // 1. 检查 resources 目录
     const resourcesFullPath = join(getResourcesPath(), relativePath)

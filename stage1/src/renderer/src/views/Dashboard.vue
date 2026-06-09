@@ -51,6 +51,7 @@ onMounted(async () => {
     router.replace('/region')
     return
   }
+  await dataStore.reloadData()
   bgUrl.value = await resolveAssetUrl('images/background/bg1.png')
 })
 

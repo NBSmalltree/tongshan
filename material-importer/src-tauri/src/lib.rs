@@ -12,6 +12,8 @@ pub struct Theme {
     pub label: String,
     #[serde(default)]
     pub background: String,
+    #[serde(default, rename = "pageBackground")]
+    pub page_background: String,
     #[serde(default)]
     pub description: String,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -453,6 +455,97 @@ fn import_welcome_images(target_dir: String, source_files: Vec<String>) -> Resul
     Ok(imported)
 }
 
+// ── Theme Image Commands ─────────────────────────────────────────────────────
+
+#[tauri::command]
+fn update_theme_image(
+    data_path: String,
+    theme_name: String,
+    field: String,
+    image_filename: String,
+) -> Result<DataJson, String> {
+    let content = fs::read_to_string(&data_path).map_err(|e| format!("读取 data.json 失败: {}", e))?;
+    let mut data: DataJson = serde_json::from_str(&content).map_err(|e| format!("解析 data.json 失败: {}", e))?;
+
+    let theme = data
+        .themes
+        .iter_mut()
+        .find(|t| t.name == theme_name)
+        .ok_or_else(|| format!("未找到主题: {}", theme_name))?;
+
+    let relative_path = if image_filename.is_empty() {
+        String::new()
+    } else {
+        format!("images/themes/{}", image_filename)
+    };
+
+    match field.as_str() {
+        "background" => theme.background = relative_path,
+        "pageBackground" => theme.page_background = relative_path,
+        _ => return Err(format!("不支持的字段: {}", field)),
+    }
+
+    let updated_json =
+        serde_json::to_string_pretty(&data).map_err(|e| format!("序列化 JSON 失败: {}", e))?;
+    fs::write(&data_path, updated_json).map_err(|e| format!("写入 data.json 失败: {}", e))?;
+
+    Ok(data)
+}
+
+#[tauri::command]
+fn import_theme_images(
+    target_dir: String,
+    source_files: Vec<String>,
+    theme_names: Vec<String>,
+    field_types: Vec<String>,
+) -> Result<Vec<String>, String> {
+    let dest = Path::new(&target_dir);
+    fs::create_dir_all(dest).map_err(|e| format!("创建目录失败: {}", e))?;
+
+    if source_files.len() != theme_names.len() || source_files.len() != field_types.len() {
+        return Err("参数长度不一致".to_string());
+    }
+
+    let mut imported = Vec::new();
+
+    for i in 0..source_files.len() {
+        let src = Path::new(&source_files[i]);
+        let ext = src
+            .extension()
+            .and_then(|e| e.to_str())
+            .unwrap_or("jpg");
+        let target_name = unique_filename(dest, &format!("{}-{}.{}", theme_names[i], field_types[i], ext));
+        let target = dest.join(&target_name);
+
+        fs::copy(src, &target).map_err(|e| format!("复制文件失败 {}: {}", source_files[i], e))?;
+        imported.push(target_name);
+    }
+
+    Ok(imported)
+}
+
+/// 如果文件已存在，追加 _1, _2, ... 后缀直到不重名
+fn unique_filename(dir: &Path, filename: &str) -> String {
+    let path = dir.join(filename);
+    if !path.exists() {
+        return filename.to_string();
+    }
+
+    let (stem, ext) = match filename.rfind('.') {
+        Some(pos) => (&filename[..pos], &filename[pos..]),
+        None => (filename, ""),
+    };
+
+    for i in 1..10000 {
+        let new_name = format!("{}{}{}", stem, i, ext);
+        if !dir.join(&new_name).exists() {
+            return new_name;
+        }
+    }
+    // 极端兜底：原文件名
+    filename.to_string()
+}
+
 // ── Paths Config ─────────────────────────────────────────────────────────────
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -522,6 +615,8 @@ pub fn run() {
             load_config_json,
             update_welcome_images,
             import_welcome_images,
+            update_theme_image,
+            import_theme_images,
             save_paths,
             load_paths,
         ])

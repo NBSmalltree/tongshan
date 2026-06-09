@@ -99,7 +99,13 @@ const activeType = ref<string>('')
 const typeLabelMap: Record<string, string> = { video: '视频', audio: '音频', image: '图片', text: '文字' }
 
 onMounted(async () => {
-  bgUrl.value = await resolveAssetUrl('images/background/bg1.png')
+  const currentTheme = dataStore.themes.find(t => t.name === route.params.themeName)
+  if (currentTheme?.pageBackground) {
+    const resolved = await resolveAssetUrl(currentTheme.pageBackground)
+    bgUrl.value = resolved || await resolveAssetUrl('images/background/bg1.png')
+  } else {
+    bgUrl.value = await resolveAssetUrl('images/background/bg1.png')
+  }
   window.addEventListener('resize', calculateScrollBounds)
   nextTick(() => { calculateScrollBounds() })
 })
@@ -239,7 +245,14 @@ function goToDetail(id: string) {
 .theme-list {
   width: 100%; height: 100%; display: flex; flex-direction: column; overflow: hidden;
   background-size: cover; background-position: center; background-color: #0b0d19;
+  position: relative;
 }
+.theme-list::before {
+  content: ''; position: absolute; inset: 0; z-index: 0;
+  backdrop-filter: blur(6px) brightness(0.65);
+  background: rgba(0, 0, 0, 0.25);
+}
+.theme-list > * { position: relative; z-index: 1; }
 .theme-list-header { padding: 55px 80px clamp(10px, 1.5vh, 24px); flex-shrink: 0; }
 .back-nav { display: flex; align-items: center; }
 .back-btn {

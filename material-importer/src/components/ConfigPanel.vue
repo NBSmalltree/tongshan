@@ -14,7 +14,7 @@ defineProps<{
   selectedTheme: string;
   themes: ThemeWithCount[];
   loading: boolean;
-  activeTab: "material" | "welcome";
+  activeTab: "material" | "welcome" | "theme";
 }>();
 
 const emit = defineEmits<{
@@ -24,7 +24,7 @@ const emit = defineEmits<{
   "update:selectedTheme": [value: string];
   "load-data": [];
   "scan": [];
-  "update:activeTab": [value: "material" | "welcome"];
+  "update:activeTab": [value: "material" | "welcome" | "theme"];
 }>();
 
 async function browseResourcesDir() {
@@ -83,6 +83,13 @@ async function browseSourceFolder() {
         @click="emit('update:activeTab', 'welcome')"
       >
         欢迎轮播图
+      </button>
+      <button
+        class="tab-btn"
+        :class="{ active: activeTab === 'theme' }"
+        @click="emit('update:activeTab', 'theme')"
+      >
+        专题图片
       </button>
     </div>
 

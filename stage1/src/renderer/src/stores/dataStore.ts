@@ -19,6 +19,7 @@ export interface Theme {
   name: string
   label: string
   background: string
+  pageBackground?: string
   description: string
   visible?: boolean
 }
@@ -30,6 +31,10 @@ export const useDataStore = defineStore('data', () => {
 
   async function loadData(): Promise<void> {
     if (loaded.value) return
+    await reloadData()
+  }
+
+  async function reloadData(): Promise<void> {
     try {
       const data = await window.electronAPI.readDataJson()
       if (data) {
@@ -70,5 +75,5 @@ export const useDataStore = defineStore('data', () => {
     return Array.from(tagSet)
   })
 
-  return { themes, materials, loaded, loadData, getMaterialsByTheme, getMaterialById, fuzzySearch, allTags }
+  return { themes, materials, loaded, loadData, reloadData, getMaterialsByTheme, getMaterialById, fuzzySearch, allTags }
 })
