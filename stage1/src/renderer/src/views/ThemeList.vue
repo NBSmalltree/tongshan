@@ -293,13 +293,5 @@ function goToDetail(id: string) {
 .filter-capsule { background: transparent; border: 1px solid rgba(255, 255, 255, 0.15); color: rgba(255, 255, 255, 0.7); padding: 10px 24px; border-radius: 20px; font-size: 16px; cursor: pointer; transition: all 0.25s ease; min-width: 60px; }
 .filter-capsule.active { border-color: #e8b86d; color: #ffd598; background: rgba(232, 184, 109, 0.15); box-shadow: 0 0 12px rgba(232, 184, 109, 0.3); }
 
-/* 焕新底栏样式 */
-.bottom-search-trigger-bar {
-  flex-shrink: 0; width: 100%; height: 80px;
-  background: linear-gradient(to top, rgba(13, 13, 13, 0.98), rgba(26, 26, 46, 0.95));
-  border-top: 1px solid rgba(255, 255, 255, 0.12); cursor: pointer;
-  display: flex; align-items: center; padding: 0 80px; box-sizing: border-box;
-}
-.trigger-inner { display: flex; align-items: center; color: rgba(255, 255, 255, 0.4); font-size: 18px; }
-.search-icon { margin-right: 16px; font-size: 20px; }
+/* 搜索栏样式已提取到全局 index.css */
 </style>
