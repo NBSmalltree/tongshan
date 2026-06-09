@@ -370,6 +370,7 @@ fn execute_import(
             cover: cover_val,
             content: content_val,
             tags: pf.tags.clone(),
+            price: None,
         });
 
         success_count += 1;
@@ -540,6 +541,136 @@ fn unique_filename(dir: &Path, filename: &str) -> String {
     filename.to_string()
 }
 
+// ── Material Edit Commands ───────────────────────────────────────────────────
+
+#[tauri::command]
+fn update_material(
+    data_path: String,
+    material_id: String,
+    fields: HashMap<String, serde_json::Value>,
+) -> Result<DataJson, String> {
+    let content = fs::read_to_string(&data_path).map_err(|e| format!("读取 data.json 失败: {}", e))?;
+    let mut data: DataJson = serde_json::from_str(&content).map_err(|e| format!("解析 data.json 失败: {}", e))?;
+
+    let material = data
+        .materials
+        .iter_mut()
+        .find(|m| m.id == material_id)
+        .ok_or_else(|| format!("未找到素材: {}", material_id))?;
+
+    for (key, value) in &fields {
+        match key.as_str() {
+            "title" => {
+                if let Some(v) = value.as_str() {
+                    material.title = v.to_string();
+                }
+            }
+            "author" => {
+                if let Some(v) = value.as_str() {
+                    material.author = v.to_string();
+                }
+            }
+            "type" => {
+                if let Some(v) = value.as_str() {
+                    material.type_ = v.to_string();
+                }
+            }
+            "category" => {
+                if let Some(v) = value.as_str() {
+                    material.category = v.to_string();
+                }
+            }
+            "region" => {
+                if let Some(v) = value.as_str() {
+                    material.region = v.to_string();
+                }
+            }
+            "period" => {
+                if let Some(v) = value.as_str() {
+                    material.period = v.to_string();
+                }
+            }
+            "cover" => {
+                if let Some(v) = value.as_str() {
+                    material.cover = v.to_string();
+                }
+            }
+            "price" => {
+                material.price = value.as_f64();
+            }
+            "theme" => {
+                if let Some(v) = value.as_str() {
+                    // 验证目标主题存在
+                    if data.themes.iter().any(|t| t.name == v) {
+                        material.theme = v.to_string();
+                    } else {
+                        return Err(format!("目标主题不存在: {}", v));
+                    }
+                }
+            }
+            "tags" => {
+                if let Some(arr) = value.as_array() {
+                    material.tags = arr
+                        .iter()
+                        .filter_map(|v| v.as_str().map(|s| s.to_string()))
+                        .collect();
+                }
+            }
+            _ => {} // 忽略不支持的字段
+        }
+    }
+
+    let updated_json =
+        serde_json::to_string_pretty(&data).map_err(|e| format!("序列化 JSON 失败: {}", e))?;
+    fs::write(&data_path, updated_json).map_err(|e| format!("写入 data.json 失败: {}", e))?;
+
+    Ok(data)
+}
+
+#[tauri::command]
+fn delete_material(
+    data_path: String,
+    material_id: String,
+) -> Result<DataJson, String> {
+    let content = fs::read_to_string(&data_path).map_err(|e| format!("读取 data.json 失败: {}", e))?;
+    let mut data: DataJson = serde_json::from_str(&content).map_err(|e| format!("解析 data.json 失败: {}", e))?;
+
+    let original_len = data.materials.len();
+    data.materials.retain(|m| m.id != material_id);
+
+    if data.materials.len() == original_len {
+        return Err(format!("未找到素材: {}", material_id));
+    }
+
+    let updated_json =
+        serde_json::to_string_pretty(&data).map_err(|e| format!("序列化 JSON 失败: {}", e))?;
+    fs::write(&data_path, updated_json).map_err(|e| format!("写入 data.json 失败: {}", e))?;
+
+    Ok(data)
+}
+
+#[tauri::command]
+fn import_material_cover(
+    target_dir: String,
+    source_file: String,
+    material_id: String,
+) -> Result<String, String> {
+    let dest = Path::new(&target_dir);
+    fs::create_dir_all(dest).map_err(|e| format!("创建目录失败: {}", e))?;
+
+    let src = Path::new(&source_file);
+    let ext = src
+        .extension()
+        .and_then(|e| e.to_str())
+        .unwrap_or("jpg");
+    let target_name = format!("{}.{}", material_id, ext);
+    let target = dest.join(&target_name);
+
+    fs::copy(src, &target).map_err(|e| format!("复制文件失败: {}", e))?;
+
+    Ok(format!("images/covers/{}", target_name))
+}
+
 // ── Paths Config ─────────────────────────────────────────────────────────────
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
@@ -611,6 +742,9 @@ pub fn run() {
             import_welcome_images,
             update_theme_image,
             import_theme_images,
+            update_material,
+            delete_material,
+            import_material_cover,
             save_paths,
             load_paths,
         ])

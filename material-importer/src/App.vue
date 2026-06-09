@@ -6,6 +6,7 @@ import MaterialTree from "./components/MaterialTree.vue";
 import PreviewTable from "./components/PreviewTable.vue";
 import WelcomePanel from "./components/WelcomePanel.vue";
 import ThemePanel from "./components/ThemePanel.vue";
+import MaterialPanel from "./components/MaterialPanel.vue";
 
 interface Theme {
   name: string;
@@ -70,7 +71,7 @@ const resourcesDir = ref("");
 const sourceFolderPath = ref("");
 const prefix = ref("");
 const selectedTheme = ref("");
-const activeTab = ref<"material" | "welcome" | "theme">("material");
+const activeTab = ref<"material" | "welcome" | "theme" | "manage">("material");
 const data = ref<DataJson | null>(null);
 const themesWithCount = ref<ThemeWithCount[]>([]);
 const prefixStats = ref<PrefixInfo[]>([]);
@@ -152,6 +153,10 @@ async function handleLoadData(silent = false) {
 
 // ThemePanel data update handler
 function onThemeDataUpdated(newData: DataJson) {
+  data.value = newData;
+}
+
+function onMaterialDataUpdated(newData: DataJson) {
   data.value = newData;
 }
 
@@ -301,13 +306,23 @@ async function handleImport() {
     />
 
     <ThemePanel
-      v-else
+      v-else-if="activeTab === 'theme'"
       :resourcesDir="resourcesDir"
       :data="data"
       :loading="loading"
       @update:loading="loading = $event"
       @status-msg="statusMsg = $event"
       @data-updated="onThemeDataUpdated"
+    />
+
+    <MaterialPanel
+      v-else
+      :resourcesDir="resourcesDir"
+      :data="data"
+      :loading="loading"
+      @update:loading="loading = $event"
+      @status-msg="statusMsg = $event"
+      @data-updated="onMaterialDataUpdated"
     />
 
     <div class="status-bar">

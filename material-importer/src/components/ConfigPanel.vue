@@ -14,7 +14,7 @@ defineProps<{
   selectedTheme: string;
   themes: ThemeWithCount[];
   loading: boolean;
-  activeTab: "material" | "welcome" | "theme";
+  activeTab: "material" | "welcome" | "theme" | "manage";
 }>();
 
 const emit = defineEmits<{
@@ -24,7 +24,7 @@ const emit = defineEmits<{
   "update:selectedTheme": [value: string];
   "load-data": [];
   "scan": [];
-  "update:activeTab": [value: "material" | "welcome" | "theme"];
+  "update:activeTab": [value: "material" | "welcome" | "theme" | "manage"];
 }>();
 
 async function browseResourcesDir() {
@@ -90,6 +90,13 @@ async function browseSourceFolder() {
         @click="emit('update:activeTab', 'theme')"
       >
         专题图片
+      </button>
+      <button
+        class="tab-btn"
+        :class="{ active: activeTab === 'manage' }"
+        @click="emit('update:activeTab', 'manage')"
+      >
+        素材管理
       </button>
     </div>
 
