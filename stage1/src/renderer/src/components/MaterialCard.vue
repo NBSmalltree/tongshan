@@ -83,6 +83,7 @@ function handleDownload() {
   transition: transform var(--transition-fast), box-shadow var(--transition-fast);
   box-shadow: var(--shadow-card);
   position: relative;
+  touch-action: manipulation;
 }
 
 .material-card:hover,

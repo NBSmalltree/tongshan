@@ -107,11 +107,18 @@ function goToDetail(id: string) {
   border-radius: var(--radius-sm);
   cursor: pointer;
   transition: all var(--transition-fast);
+  touch-action: manipulation;
 }
 
 .result-item:hover {
   background: rgba(255, 255, 255, 0.1);
   transform: translateY(-2px);
+}
+
+.result-item:active {
+  background: rgba(255, 255, 255, 0.15);
+  transform: scale(0.97);
+  transition-duration: 0.1s;
 }
 
 .result-cover {

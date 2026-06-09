@@ -57,6 +57,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { useDataStore } from '../stores/dataStore'
 import { useAppStore } from '../stores/appStore'
 import { useStaticPath } from '../composables/useStaticPath'
+import { useDragScroll } from '../composables/useDragScroll'
 import MaterialCard from '../components/MaterialCard.vue'
 
 const route = useRoute()
@@ -69,68 +70,18 @@ const bgUrl = ref('')
 const gridRef = ref<HTMLElement | null>(null)
 const scrollRef = ref<HTMLElement | null>(null)
 
-// 纵向拖拽滚动
-let isDragging = false
-let hasMoved = false
-let startY = 0
-let startScrollTop = 0
-const SCROLL_THRESHOLD = 8
-
-function getScrollContainer(): HTMLElement | null {
-  return scrollRef.value || gridRef.value?.parentElement as HTMLElement
-}
-
-function onPointerDown(e: PointerEvent) {
-  if (e.button !== 0) return
-  const container = getScrollContainer()
-  if (!container) return
-  isDragging = true
-  hasMoved = false
-  startY = e.clientY
-  startScrollTop = container.scrollTop
-}
-
-function onPointerMove(e: PointerEvent) {
-  if (!isDragging) return
-  const container = getScrollContainer()
-  if (!container) return
-  const deltaY = startY - e.clientY
-  if (Math.abs(deltaY) > SCROLL_THRESHOLD) hasMoved = true
-  container.scrollTop = startScrollTop + deltaY
-}
-
-function onPointerUp() {
-  isDragging = false
-}
-
-// 触摸事件：和 pointer 配合，覆盖移动端
-function onTouchStart(e: TouchEvent) {
-  const container = getScrollContainer()
-  if (!container) return
-  isDragging = true
-  hasMoved = false
-  startY = e.touches[0].clientY
-  startScrollTop = container.scrollTop
-}
-
-function onTouchMove(e: TouchEvent) {
-  if (!isDragging) return
-  const container = getScrollContainer()
-  if (!container) return
-  const deltaY = startY - e.touches[0].clientY
-  if (Math.abs(deltaY) > SCROLL_THRESHOLD) hasMoved = true
-  container.scrollTop = startScrollTop + deltaY
-}
-
-function onTouchEnd() {
-  isDragging = false
-}
+// 拖拽滚动 + 惯性
+const scrollContainerRef = ref<HTMLElement | null>(null)
+const { hasMoved, onPointerDown, onPointerMove, onPointerUp, onTouchStart, onTouchMove, onTouchEnd } = useDragScroll(scrollContainerRef)
 
 const activeType = ref<string>('image')
 const filterTypes = ['image', 'video', 'audio', 'file'] as const
 const typeLabelMap: Record<string, string> = { image: '图片', video: '视频', audio: '音频', file: '文件' }
 
+// 在 onMounted 后绑定滚动容器
 onMounted(async () => {
+  scrollContainerRef.value = scrollRef.value
+
   const currentTheme = dataStore.themes.find(t => t.name === route.params.themeName)
   if (currentTheme?.pageBackground) {
     const resolved = await resolveAssetUrl(currentTheme.pageBackground)
@@ -167,8 +118,8 @@ function goBack() {
 }
 
 function goToDetail(id: string) {
-  if (hasMoved) {
-    hasMoved = false
+  if (hasMoved.value) {
+    hasMoved.reset()
     return
   }
   router.push(`/detail/${id}`)

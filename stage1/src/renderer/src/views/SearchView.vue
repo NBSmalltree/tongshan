@@ -81,6 +81,7 @@ import { ref, reactive, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useDataStore } from '../stores/dataStore'
 import { useAppStore } from '../stores/appStore'
+import { useDragScroll } from '../composables/useDragScroll'
 import MaterialCard from '../components/MaterialCard.vue'
 import VirtualKeyboard from '../components/VirtualKeyboard.vue'
 import SearchResults from '../components/SearchResults.vue'
@@ -91,61 +92,15 @@ const appStore = useAppStore()
 const gridRef = ref<HTMLElement | null>(null)
 const scrollRef = ref<HTMLElement | null>(null)
 
-// 纵向拖拽滚动
-let isDragging = false
-let hasMoved = false
-let startY = 0
-let startScrollTop = 0
-const SCROLL_THRESHOLD = 8
+// 拖拽滚动 + 惯性
+const scrollContainerRef = ref<HTMLElement | null>(null)
+const { hasMoved, onPointerDown, onPointerMove, onPointerUp, onTouchStart, onTouchMove, onTouchEnd } = useDragScroll(scrollContainerRef)
 
-function getScrollContainer(): HTMLElement | null {
-  return scrollRef.value || gridRef.value?.parentElement as HTMLElement
-}
-
-function onPointerDown(e: PointerEvent) {
-  if (e.button !== 0) return
-  const container = getScrollContainer()
-  if (!container) return
-  isDragging = true
-  hasMoved = false
-  startY = e.clientY
-  startScrollTop = container.scrollTop
-}
-
-function onPointerMove(e: PointerEvent) {
-  if (!isDragging) return
-  const container = getScrollContainer()
-  if (!container) return
-  const deltaY = startY - e.clientY
-  if (Math.abs(deltaY) > SCROLL_THRESHOLD) hasMoved = true
-  container.scrollTop = startScrollTop + deltaY
-}
-
-function onPointerUp() {
-  isDragging = false
-}
-
-function onTouchStart(e: TouchEvent) {
-  const container = getScrollContainer()
-  if (!container) return
-  isDragging = true
-  hasMoved = false
-  startY = e.touches[0].clientY
-  startScrollTop = container.scrollTop
-}
-
-function onTouchMove(e: TouchEvent) {
-  if (!isDragging) return
-  const container = getScrollContainer()
-  if (!container) return
-  const deltaY = startY - e.touches[0].clientY
-  if (Math.abs(deltaY) > SCROLL_THRESHOLD) hasMoved = true
-  container.scrollTop = startScrollTop + deltaY
-}
-
-function onTouchEnd() {
-  isDragging = false
-}
+// 在 onMounted 后绑定滚动容器
+onMounted(async () => {
+  scrollContainerRef.value = scrollRef.value
+  await dataStore.loadData()
+})
 
 // 1. 分类数据定义
 const filterGroups = {
@@ -205,9 +160,6 @@ function fileTypeMap(label: string) {
   return map[label] || label
 }
 
-onMounted(async () => {
-  await dataStore.loadData()
-})
 
 // 4. 键盘与搜索框功能
 function openKeyboard() { appStore.toggleKeyboard(true) }
@@ -226,8 +178,8 @@ function goBack() {
 }
 
 function goToDetail(id: string) {
-  if (hasMoved) {
-    hasMoved = false
+  if (hasMoved.value) {
+    hasMoved.reset()
     return
   }
   appStore.clearSearch()
@@ -300,6 +252,7 @@ function goToDetail(id: string) {
   align-items: center;
   padding: 0 20px;
   cursor: pointer;
+  touch-action: manipulation;
 }
 
 .search-icon { margin-right: 12px; font-size: 18px; }
@@ -319,8 +272,20 @@ function goToDetail(id: string) {
   color: #fff;
   border-radius: 50%;
   cursor: pointer;
-  width: 24px;
-  height: 24px;
+  width: 36px;
+  height: 36px;
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  touch-action: manipulation;
+  transition: background 0.2s ease;
+}
+
+.search-clear:active {
+  background: rgba(255, 255, 255, 0.25);
+  transform: scale(0.9);
 }
 
 /* 胶囊筛选区样式 */
@@ -353,7 +318,7 @@ function goToDetail(id: string) {
   background: transparent;
   border: 1px solid rgba(255, 255, 255, 0.15);
   color: rgba(255, 255, 255, 0.7);
-  padding: 6px 20px;
+  padding: 10px 20px;
   border-radius: 20px;
   font-size: 15px;
   cursor: pointer;

@@ -221,11 +221,11 @@ function handleDownload() {
 }
 
 .tag {
-  padding: 4px 12px;
+  padding: 6px 14px;
   background: var(--color-card-bg);
   border: 1px solid var(--color-card-border);
   border-radius: 20px;
-  font-size: 13px;
+  font-size: 14px;
   color: var(--color-accent);
 }
 

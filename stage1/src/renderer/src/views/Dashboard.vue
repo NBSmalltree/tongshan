@@ -135,7 +135,7 @@ function goToRegion() {
 /* ================= 地区标识与建设中状态 ================= */
 .region-badge {
   margin-left: 16px;
-  padding: 6px 16px;
+  padding: 10px 20px;
   border-radius: 20px;
   background: rgba(232, 184, 109, 0.2);
   border: 1px solid rgba(232, 184, 109, 0.4);
@@ -144,10 +144,12 @@ function goToRegion() {
   cursor: pointer;
   transition: all var(--transition-fast);
   font-family: var(--font-sans);
+  touch-action: manipulation;
 }
 
-.region-badge:hover {
+.region-badge:active {
   background: rgba(232, 184, 109, 0.35);
+  transform: scale(0.95);
 }
 
 .under-construction {

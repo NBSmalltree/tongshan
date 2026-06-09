@@ -25,7 +25,7 @@
         {{ isPlaying ? '⏸' : '▶' }}
       </button>
 
-      <div class="progress-bar" @click="seek($event)">
+      <div class="progress-bar" @pointerdown="seek($event)">
         <div class="progress-fill" :style="{ width: progress + '%' }"></div>
       </div>
 
@@ -101,12 +101,12 @@ function onEnded() {
   isPlaying.value = false
 }
 
-function seek(event: MouseEvent) {
+function seek(event: PointerEvent) {
   const el = mediaEl.value
   if (!el || !duration.value) return
   const target = event.currentTarget as HTMLElement
   const rect = target.getBoundingClientRect()
-  const ratio = (event.clientX - rect.left) / rect.width
+  const ratio = Math.max(0, Math.min(1, (event.clientX - rect.left) / rect.width))
   el.currentTime = ratio * duration.value
 }
 
@@ -199,31 +199,38 @@ onUnmounted(() => {
 }
 
 .ctrl-btn {
-  width: 44px;
-  height: 44px;
+  width: 48px;
+  height: 48px;
   border: none;
   background: none;
   color: var(--color-text);
-  font-size: 20px;
+  font-size: 22px;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: 50%;
   transition: background var(--transition-fast);
+  touch-action: manipulation;
 }
 
-.ctrl-btn:hover {
-  background: rgba(255, 255, 255, 0.1);
+.ctrl-btn:active {
+  background: rgba(255, 255, 255, 0.2);
+  transform: scale(0.92);
 }
 
 .progress-bar {
   flex: 1;
   height: 6px;
   background: rgba(255, 255, 255, 0.2);
+  background-clip: content-box;
   border-radius: 3px;
   cursor: pointer;
   position: relative;
+  /* 触摸热区扩展：视觉 6px 高，但可点击区域上下各扩展 14px = 总高 34px */
+  padding: 14px 0;
+  margin: -14px 0;
+  touch-action: manipulation;
 }
 
 .progress-fill {
@@ -246,7 +253,10 @@ onUnmounted(() => {
 }
 
 .volume-slider {
-  width: 80px;
+  width: 100px;
+  height: 44px;
   accent-color: var(--color-accent);
+  cursor: pointer;
+  touch-action: manipulation;
 }
 </style>

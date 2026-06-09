@@ -43,12 +43,18 @@ const cardStyle = computed(() => {
   transition: transform var(--transition-fast), box-shadow var(--transition-fast);
   box-shadow: var(--shadow-card);
   position: relative;
+  touch-action: manipulation;
 }
 
-.theme-card:hover,
-.theme-card:active {
+.theme-card:hover {
   transform: scale(1.03) translateY(-4px);
   box-shadow: var(--shadow-card-hover);
+}
+
+.theme-card:active {
+  transform: scale(0.97);
+  box-shadow: var(--shadow-card-hover);
+  transition-duration: 0.1s;
 }
 
 .theme-card-overlay {
