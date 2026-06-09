@@ -1,11 +1,6 @@
 <template>
   <div class="detail" v-if="material">
-    <TopNavBar
-      :show-back="true"
-      :show-exit="true"
-      :back-action="goBack"
-      :exit-action="goHome"
-    />
+    <button class="detail-close" @click="goBack">&times;</button>
 
     <div class="detail-content">
       <template v-if="material.type === 'video'">
@@ -77,7 +72,6 @@ import { useDataStore } from '../stores/dataStore'
 import { useStaticPath } from '../composables/useStaticPath'
 import MediaPlayer from '../components/MediaPlayer.vue'
 import ImageViewer from '../components/ImageViewer.vue'
-import TopNavBar from '../components/TopNavBar.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -109,10 +103,6 @@ function goBack() {
   router.back()
 }
 
-function goHome() {
-  router.push('/')
-}
-
 function handleDownload() {
   alert('下载功能开发中')
 }
@@ -125,6 +115,31 @@ function handleDownload() {
   position: relative;
   overflow: hidden;
   background: var(--color-bg-dark);
+}
+
+.detail-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 60px;
+  height: 60px;
+  border: none;
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--color-text);
+  font-size: 32px;
+  border-radius: 50%;
+  cursor: pointer;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-fast);
+  touch-action: manipulation;
+}
+
+.detail-close:active {
+  background: rgba(255, 255, 255, 0.2);
+  transform: scale(0.9);
 }
 
 .detail-content {

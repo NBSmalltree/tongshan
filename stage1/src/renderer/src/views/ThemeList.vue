@@ -2,9 +2,7 @@
   <div class="theme-list" :style="{ backgroundImage: bgUrl ? `url(${bgUrl})` : '' }">
     <TopNavBar
       :show-back="true"
-      :show-exit="true"
       :back-action="goBack"
-      :exit-action="goHome"
     />
 
     <header class="theme-list-header">
@@ -117,10 +115,6 @@ function navigateToSearchPage() {
 function goBack() {
   appStore.clearSearch()
   router.push('/dashboard')
-}
-
-function goHome() {
-  router.push('/')
 }
 
 function goToDetail(id: string) {

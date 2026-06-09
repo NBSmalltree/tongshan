@@ -10,8 +10,6 @@
     </div>
 
     <div class="exit-zone" @click="handleExitTap"></div>
-
-    <TopNavBar :show-exit="true" :exit-action="handleExit" />
   </div>
 </template>
 
@@ -19,7 +17,6 @@
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import CarouselSlider from '../components/CarouselSlider.vue'
-import TopNavBar from '../components/TopNavBar.vue'
 import { useStaticPath } from '../composables/useStaticPath'
 
 const router = useRouter()
@@ -70,10 +67,6 @@ function handleExitTap() {
   exitTapTimer = setTimeout(() => {
     exitTapCount = 0
   }, 500)
-}
-
-function handleExit() {
-  window.electronAPI.closeApp()
 }
 </script>
 

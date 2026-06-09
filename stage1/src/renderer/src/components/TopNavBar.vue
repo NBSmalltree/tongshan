@@ -4,9 +4,11 @@
       <span class="nav-arrow">←</span>
       <span>返回</span>
     </button>
-    <button v-if="showExit" class="nav-btn nav-exit" @click="handleExit">
-      <span class="nav-cross">✕</span>
-      <span>退出</span>
+    <button v-if="showExit" class="nav-btn-icon nav-exit" @click="handleExit" title="回到首页">
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"/>
+        <path d="M14 16l-4-4 4-4"/>
+      </svg>
     </button>
   </nav>
 </template>
@@ -52,10 +54,11 @@ function handleExit() {
   z-index: 500;
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 12px 40px;
+  gap: 10px;
+  padding: 16px 40px;
 }
 
+/* 带文字的按钮（返回） */
 .nav-btn {
   display: flex;
   align-items: center;
@@ -84,8 +87,25 @@ function handleExit() {
   line-height: 1;
 }
 
-.nav-cross {
-  font-size: 18px;
-  line-height: 1;
+/* 纯图标按钮（退出/首页） */
+.nav-btn-icon {
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 50%;
+  color: rgba(255, 255, 255, 0.75);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.nav-btn-icon:active {
+  background: rgba(255, 255, 255, 0.2);
+  transform: scale(0.9);
 }
 </style>
