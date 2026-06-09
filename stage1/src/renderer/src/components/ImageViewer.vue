@@ -1,6 +1,7 @@
 <template>
   <div class="image-viewer">
     <img
+      ref="imgRef"
       :src="src"
       :alt="alt"
       class="viewer-image"
@@ -18,6 +19,7 @@ import { ref, computed } from 'vue'
 
 defineProps<{ src: string; alt?: string }>()
 
+const imgRef = ref<HTMLImageElement | null>(null)
 const scale = ref(1)
 const translateX = ref(0)
 const translateY = ref(0)
@@ -31,6 +33,9 @@ let isDragging = false
 let lastTouchDist = 0
 let lastPinchMidX = 0
 let lastPinchMidY = 0
+// touchstart 时缓存元素中心坐标，避免 touchmove 中频繁 reflow
+let cachedCenterX = 0
+let cachedCenterY = 0
 
 const imageStyle = computed(() => ({
   transform: `translate(${translateX.value}px, ${translateY.value}px) scale(${scale.value})`,
@@ -50,22 +55,19 @@ function getTouchMid(touches: TouchList) {
   }
 }
 
-function clampTranslate() {
-  // 限制平移范围，防止图片完全移出视野
-  const maxOffset = (scale.value - 1) * 600
-  translateX.value = Math.max(-maxOffset, Math.min(maxOffset, translateX.value))
-  translateY.value = Math.max(-maxOffset, Math.min(maxOffset, translateY.value))
-}
-
 function onTouchStart(e: TouchEvent) {
   if (e.touches.length === 2) {
-    // 记录双指初始距离和中点
     lastTouchDist = getTouchDist(e.touches)
     const mid = getTouchMid(e.touches)
     lastPinchMidX = mid.x
     lastPinchMidY = mid.y
+    // 在 touchstart 中一次性读取 DOM，避免 touchmove 中频繁 reflow
+    if (imgRef.value) {
+      const rect = imgRef.value.getBoundingClientRect()
+      cachedCenterX = rect.left + rect.width / 2
+      cachedCenterY = rect.top + rect.height / 2
+    }
   } else if (e.touches.length === 1) {
-    // 记录单指初始位置
     lastTouchX = e.touches[0].clientX
     lastTouchY = e.touches[0].clientY
     isDragging = true
@@ -74,22 +76,24 @@ function onTouchStart(e: TouchEvent) {
 
 function onTouchMove(e: TouchEvent) {
   if (e.touches.length === 2) {
-    // --- 双指缩放 ---
+    // --- 双指缩放，以两指中点为中心 ---
     const dist = getTouchDist(e.touches)
     const mid = getTouchMid(e.touches)
 
-    // 缩放：以两指中点为中心
     const oldScale = scale.value
     const delta = (dist - lastTouchDist) * 0.005
     const newScale = Math.max(0.5, Math.min(5, oldScale + delta))
-    scale.value = newScale
-
-    // 补偿位移：让缩放围绕手指中点进行
-    // 中点在屏幕上的移动也要跟随
     const scaleFactor = newScale / oldScale
-    translateX.value = mid.x - scaleFactor * (mid.x - translateX.value) + (mid.x - lastPinchMidX)
-    translateY.value = mid.y - scaleFactor * (mid.y - translateY.value) + (mid.y - lastPinchMidY)
-    clampTranslate()
+
+    // 补偿公式（transform-origin: center center）：
+    //   屏幕X = cx + tx + s * (imgX - cx)
+    //   保持 imgX 不变 → tx_new = (midX - cx) - s_new * ((midX - cx - tx_old) / s_old)
+    // 加上手指中点的移动量
+    const ox = mid.x - cachedCenterX
+    const oy = mid.y - cachedCenterY
+    translateX.value = ox - scaleFactor * (ox - translateX.value) + (mid.x - lastPinchMidX)
+    translateY.value = oy - scaleFactor * (oy - translateY.value) + (mid.y - lastPinchMidY)
+    scale.value = newScale
 
     lastTouchDist = dist
     lastPinchMidX = mid.x
@@ -100,7 +104,6 @@ function onTouchMove(e: TouchEvent) {
     const dy = e.touches[0].clientY - lastTouchY
     translateX.value += dx
     translateY.value += dy
-    clampTranslate()
 
     lastTouchX = e.touches[0].clientX
     lastTouchY = e.touches[0].clientY
@@ -111,7 +114,6 @@ function onTouchEnd() {
   lastTouchDist = 0
   isDragging = false
 
-  // 缩放到 1x 以下时自动复位
   if (scale.value <= 1) {
     scale.value = 1
     translateX.value = 0
