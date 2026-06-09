@@ -4,8 +4,8 @@
       <span class="nav-arrow">←</span>
       <span>返回</span>
     </button>
-    <button v-if="showExit" class="nav-btn-icon nav-exit" @click="handleExit" title="回到首页">
-      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <button v-if="showExit" class="nav-btn-icon nav-exit" @click="handleExit" title="返回">
+      <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <circle cx="12" cy="12" r="10"/>
         <path d="M14 16l-4-4 4-4"/>
       </svg>
@@ -87,10 +87,10 @@ function handleExit() {
   line-height: 1;
 }
 
-/* 纯图标按钮（退出/首页） */
+/* 纯图标按钮（返回/首页） */
 .nav-btn-icon {
-  width: 44px;
-  height: 44px;
+  width: 56px;
+  height: 56px;
   display: flex;
   align-items: center;
   justify-content: center;

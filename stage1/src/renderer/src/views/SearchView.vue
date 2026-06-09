@@ -1,10 +1,8 @@
 <template>
   <div class="search-page">
     <TopNavBar
-      :show-back="true"
       :show-exit="true"
-      :back-action="goBack"
-      :exit-action="goHome"
+      :exit-action="goBack"
     />
 
     <header class="search-header">
@@ -177,11 +175,6 @@ function onBackspace() {
 function goBack() {
   appStore.clearSearch()
   router.back()
-}
-
-function goHome() {
-  appStore.clearSearch()
-  router.push('/')
 }
 
 function goToDetail(id: string) {
