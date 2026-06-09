@@ -33,7 +33,7 @@ const props = defineProps<{
 }>();
 
 const typeIcons: Record<string, string> = {
-  text: "📄",
+  file: "📄",
   image: "🖼️",
   video: "🎬",
   audio: "🎵",

@@ -18,15 +18,29 @@
         <ImageViewer :src="assetUrl" :alt="material.title" />
       </template>
 
-      <template v-else-if="material.type === 'text'">
-        <div class="text-layout">
-          <div class="text-cover" v-if="coverUrl">
-            <img :src="coverUrl" :alt="material.title" />
-          </div>
-          <div class="text-body">
-            <h1>{{ material.title }}</h1>
-            <p class="text-author">作者：{{ material.author }}</p>
-            <div class="text-content">{{ material.content }}</div>
+      <template v-else-if="material.type === 'file'">
+        <div class="file-layout">
+          <div class="file-card">
+            <div class="file-cover" v-if="coverUrl">
+              <img :src="coverUrl" :alt="material.title" />
+            </div>
+            <div class="file-icon-wrap" v-else>
+              <svg class="file-icon-lg" viewBox="0 0 48 64" fill="none">
+                <rect x="2" y="2" width="44" height="60" rx="4" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.2)" stroke-width="1.5"/>
+                <path d="M30 2 L46 18 L30 18 Z" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.15)" stroke-width="1" stroke-linejoin="round"/>
+                <line x1="30" y1="2" x2="30" y2="18" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
+                <line x1="30" y1="18" x2="46" y2="18" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
+                <rect x="12" y="28" width="24" height="3" rx="1.5" fill="rgba(255,255,255,0.15)"/>
+                <rect x="12" y="35" width="18" height="3" rx="1.5" fill="rgba(255,255,255,0.1)"/>
+                <rect x="12" y="42" width="20" height="3" rx="1.5" fill="rgba(255,255,255,0.1)"/>
+              </svg>
+              <span class="file-ext-lg" v-if="fileExt">.{{ fileExt }}</span>
+            </div>
+            <div class="file-meta">
+              <h1>{{ material.title }}</h1>
+              <p class="file-author">作者：{{ material.author }}</p>
+              <span class="file-type-badge" v-if="fileExt">{{ fileExt.toUpperCase() }} 文件</span>
+            </div>
           </div>
         </div>
       </template>
@@ -60,6 +74,14 @@ const material = computed(() => dataStore.getMaterialById(id.value))
 
 const assetUrl = ref('')
 const coverUrl = ref('')
+
+const fileExt = computed(() => {
+  if (!material.value) return ''
+  const c = material.value.content
+  if (!c) return ''
+  const dot = c.lastIndexOf('.')
+  return dot >= 0 ? c.substring(dot + 1).toLowerCase() : ''
+})
 
 onMounted(async () => {
   if (material.value) {
@@ -169,53 +191,80 @@ function goBack() {
   box-shadow: var(--shadow-card);
 }
 
-.text-layout {
-  display: flex;
-  gap: 48px;
-  padding: 60px;
-  max-width: 1400px;
-  height: 100%;
-}
-
-.text-cover {
-  flex-shrink: 0;
-  width: 400px;
+.file-layout {
   display: flex;
   align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  padding: 60px;
 }
 
-.text-cover img {
+.file-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 32px;
+  max-width: 500px;
+}
+
+.file-cover {
+  width: 320px;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  box-shadow: var(--shadow-card);
+}
+
+.file-cover img {
   width: 100%;
   height: auto;
-  border-radius: var(--radius-md);
+  display: block;
   object-fit: cover;
 }
 
-.text-body {
-  flex: 1;
-  overflow-y: auto;
+.file-icon-wrap {
   display: flex;
   flex-direction: column;
+  align-items: center;
+  gap: 16px;
 }
 
-.text-body h1 {
+.file-icon-lg {
+  width: 96px;
+  height: 120px;
+}
+
+.file-ext-lg {
+  font-size: 18px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.4);
+  letter-spacing: 2px;
+}
+
+.file-meta {
+  text-align: center;
+}
+
+.file-meta h1 {
   font-family: var(--font-serif);
-  font-size: 36px;
-  margin-bottom: 16px;
-  margin-top: auto;
+  font-size: 32px;
+  margin-bottom: 12px;
 }
 
-.text-author {
+.file-author {
   color: var(--color-secondary);
   font-size: 16px;
-  margin-bottom: 24px;
+  margin-bottom: 16px;
 }
 
-.text-content {
-  font-size: 18px;
-  line-height: 2;
-  color: rgba(245, 240, 232, 0.85);
-  white-space: pre-wrap;
-  margin-bottom: auto;
+.file-type-badge {
+  display: inline-block;
+  padding: 6px 20px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 20px;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.5);
+  letter-spacing: 2px;
 }
 </style>

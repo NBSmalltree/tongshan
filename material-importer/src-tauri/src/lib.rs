@@ -95,7 +95,7 @@ const IMAGE_EXTS: &[&str] = &[
 ];
 const VIDEO_EXTS: &[&str] = &["mp4", "avi", "mov", "mkv", "wmv", "flv", "webm"];
 const AUDIO_EXTS: &[&str] = &["mp3", "wav", "ogg", "aac", "flac", "wma", "m4a"];
-const TEXT_EXTS: &[&str] = &["txt", "md", "rst"];
+const FILE_EXTS: &[&str] = &["txt", "md", "rst", "pdf", "doc", "docx", "xls", "xlsx", "ppt", "pptx", "csv"];
 
 fn get_type_from_ext(ext: &str) -> Option<&'static str> {
     let ext = ext.to_lowercase();
@@ -105,8 +105,8 @@ fn get_type_from_ext(ext: &str) -> Option<&'static str> {
         Some("video")
     } else if AUDIO_EXTS.contains(&ext.as_str()) {
         Some("audio")
-    } else if TEXT_EXTS.contains(&ext.as_str()) {
-        Some("text")
+    } else if FILE_EXTS.contains(&ext.as_str()) {
+        Some("file")
     } else {
         None
     }
@@ -117,6 +117,7 @@ fn get_target_subdir(type_: &str) -> &'static str {
         "image" => "images/materials",
         "video" => "videos",
         "audio" => "audios",
+        "file" => "files",
         _ => "",
     }
 }
@@ -329,17 +330,8 @@ fn execute_import(
             .and_then(|e| e.to_str())
             .unwrap_or("");
 
-        let (content_val, cover_val) = if pf.file_type == "text" {
-            // Read text content
-            match fs::read_to_string(&pf.path) {
-                Ok(text) => (text, String::new()),
-                Err(e) => {
-                    errors.push(format!("{}: 读取文本失败 - {}", pf.filename, e));
-                    continue;
-                }
-            }
-        } else {
-            // Copy file to target directory
+        let (content_val, cover_val) = {
+            // 所有类型（含 file）均复制文件到对应子目录
             let subdir = get_target_subdir(&pf.file_type);
             let target_dir = data_dir.join(subdir);
             if let Err(e) = fs::create_dir_all(&target_dir) {

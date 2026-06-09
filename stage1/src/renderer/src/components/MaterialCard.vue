@@ -1,5 +1,17 @@
 <template>
   <div class="material-card" :style="cardStyle">
+    <div class="file-fallback" v-if="material.type === 'file' && !coverUrl">
+      <svg class="file-icon" viewBox="0 0 48 64" fill="none">
+        <rect x="2" y="2" width="44" height="60" rx="4" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.25)" stroke-width="1.5"/>
+        <path d="M30 2 L46 18 L30 18 Z" fill="rgba(255,255,255,0.12)" stroke="rgba(255,255,255,0.2)" stroke-width="1" stroke-linejoin="round"/>
+        <line x1="30" y1="2" x2="30" y2="18" stroke="rgba(255,255,255,0.2)" stroke-width="1"/>
+        <line x1="30" y1="18" x2="46" y2="18" stroke="rgba(255,255,255,0.2)" stroke-width="1"/>
+        <rect x="12" y="28" width="24" height="3" rx="1.5" fill="rgba(255,255,255,0.2)"/>
+        <rect x="12" y="35" width="18" height="3" rx="1.5" fill="rgba(255,255,255,0.15)"/>
+        <rect x="12" y="42" width="20" height="3" rx="1.5" fill="rgba(255,255,255,0.15)"/>
+      </svg>
+      <span class="file-ext" v-if="fileExt">.{{ fileExt }}</span>
+    </div>
     <div class="material-card-overlay">
       <span class="material-type">{{ typeLabel }}</span>
       <div class="material-info">
@@ -35,9 +47,16 @@ const typeLabel = computed(() => {
     video: '视频',
     audio: '音频',
     image: '图片',
-    text: '文字'
+    file: '文件'
   }
   return map[props.material.type] || props.material.type
+})
+
+const fileExt = computed(() => {
+  const c = props.material.content
+  if (!c) return ''
+  const dot = c.lastIndexOf('.')
+  return dot >= 0 ? c.substring(dot + 1).toLowerCase() : ''
 })
 </script>
 
@@ -101,5 +120,28 @@ const typeLabel = computed(() => {
 .material-info p {
   font-size: 13px;
   color: rgba(255, 255, 255, 0.6);
+}
+
+.file-fallback {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  z-index: 0;
+}
+
+.file-icon {
+  width: 64px;
+  height: 80px;
+}
+
+.file-ext {
+  font-size: 14px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.45);
+  letter-spacing: 1px;
 }
 </style>

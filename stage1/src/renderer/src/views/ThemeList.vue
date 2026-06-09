@@ -10,11 +10,11 @@
       </div>
     </header>
 
-    <section class="type-filter-bar" v-if="availableTypes.length > 1">
+    <section class="type-filter-bar">
       <span class="filter-label">文件类型</span>
       <div class="filter-capsules">
         <button class="filter-capsule" :class="{ active: activeType === '' }" @click="selectType('')">全部</button>
-        <button v-for="t in availableTypes" :key="t" class="filter-capsule" :class="{ active: activeType === t }" @click="selectType(t)">{{ typeLabelMap[t] || t }}</button>
+        <button v-for="t in filterTypes" :key="t" class="filter-capsule" :class="{ active: activeType === t }" @click="selectType(t)">{{ typeLabelMap[t] }}</button>
       </div>
     </section>
 
@@ -95,8 +95,9 @@ let startX = 0
 let startScrollLeft = 0
 const rubberOffset = ref(0)
 
-const activeType = ref<string>('')
-const typeLabelMap: Record<string, string> = { video: '视频', audio: '音频', image: '图片', text: '文字' }
+const activeType = ref<string>('image')
+const filterTypes = ['image', 'video', 'audio', 'file'] as const
+const typeLabelMap: Record<string, string> = { image: '图片', video: '视频', audio: '音频', file: '文件' }
 
 onMounted(async () => {
   const currentTheme = dataStore.themes.find(t => t.name === route.params.themeName)
@@ -120,13 +121,12 @@ const themeLabel = computed(() => {
   return theme?.label || themeName.value
 })
 const themeMaterials = computed(() => dataStore.getMaterialsByTheme(themeName.value))
-const availableTypes = computed(() => [...new Set(themeMaterials.value.map(m => m.type))])
 const materials = computed(() => {
   if (!activeType.value) return themeMaterials.value
   return themeMaterials.value.filter(m => m.type === activeType.value)
 })
 
-watch(themeName, () => { activeType.value = '' })
+watch(themeName, () => { activeType.value = 'image' })
 
 const canScrollLeft = computed(() => maxScrollLeft.value > 0 && scrollLeft.value > 5)
 const canScrollRight = computed(() => maxScrollLeft.value > 0 && scrollLeft.value < maxScrollLeft.value - 5)

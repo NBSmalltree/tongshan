@@ -31,7 +31,7 @@ const emit = defineEmits<{
 }>();
 
 const typeLabels: Record<string, string> = {
-  text: "文字",
+  file: "文件",
   image: "图片",
   video: "视频",
   audio: "音频",
@@ -305,7 +305,7 @@ tr.done {
   background: #f3e5f5;
   color: #6a1b9a;
 }
-.type-text {
+.type-file {
   background: #e8f5e9;
   color: #2e7d32;
 }

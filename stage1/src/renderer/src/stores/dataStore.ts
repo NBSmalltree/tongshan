@@ -6,7 +6,7 @@ export interface Material {
   theme: string
   title: string
   author: string
-  type: 'video' | 'audio' | 'image' | 'text'
+  type: 'video' | 'audio' | 'image' | 'file'
   category: string
   region: string
   period: string

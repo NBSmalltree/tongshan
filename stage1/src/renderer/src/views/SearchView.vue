@@ -109,7 +109,7 @@ const appStore = useAppStore()
 // 1. 分类数据定义
 const filterGroups = {
   category: ['乡土人文', '非遗技艺', '自然山水', '文艺艺术'],
-  file: ['文字', '图片', '视频'],
+  file: ['图片', '视频', '音频', '文件'],
   region: ['溪口', '滕头', '莼湖'],
   period: ['古代', '近代', '当代']
 }
@@ -163,7 +163,7 @@ const filteredMaterials = computed(() => {
 })
 
 function fileTypeMap(label: string) {
-  const map: Record<string, string> = { '文字': 'text', '图片': 'image', '视频': 'video' }
+  const map: Record<string, string> = { '文件': 'file', '图片': 'image', '视频': 'video', '音频': 'audio' }
   return map[label] || label
 }
 
