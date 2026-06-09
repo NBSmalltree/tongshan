@@ -1,7 +1,9 @@
 <template>
   <div class="dashboard" :style="{ backgroundImage: bgUrl ? `url(${bgUrl})` : '' }">
+    <TopNavBar :show-exit="true" :exit-action="goHome" />
+
     <header class="dashboard-header">
-      <h1 class="clickable-title" @click="goHome">在地文化数字共创平台</h1>
+      <h1>在地文化数字共创平台</h1>
       <span v-if="selectedDistrict" class="region-badge" @click="goToRegion">
         {{ selectedDistrict }}
       </span>
@@ -39,6 +41,7 @@ import { useDataStore } from '../stores/dataStore'
 import { useAppStore } from '../stores/appStore'
 import { useStaticPath } from '../composables/useStaticPath'
 import ThemeCard from '../components/ThemeCard.vue'
+import TopNavBar from '../components/TopNavBar.vue'
 
 const router = useRouter()
 const dataStore = useDataStore()
@@ -96,7 +99,7 @@ function goToRegion() {
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  padding-top: 6vh;
+  padding-top: 50px;
 }
 
 .dashboard-header h1 {
@@ -104,11 +107,7 @@ function goToRegion() {
   font-size: 32px;
   font-weight: 600;
   letter-spacing: 4px;
-  color: #d1e2ff; /* 换用更柔和的高级青白调，配合大屏抗疲劳 */
-}
-
-.clickable-title {
-  cursor: pointer;
+  color: #d1e2ff;
 }
 
 /* ================= 核心修复点：重构主体容器与间距 ================= */

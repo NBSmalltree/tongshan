@@ -1,13 +1,14 @@
 <template>
   <div class="theme-list" :style="{ backgroundImage: bgUrl ? `url(${bgUrl})` : '' }">
+    <TopNavBar
+      :show-back="true"
+      :show-exit="true"
+      :back-action="goBack"
+      :exit-action="goHome"
+    />
+
     <header class="theme-list-header">
-      <div class="back-nav">
-        <button class="back-btn" @click="goBack">
-          <span class="arrow">←</span> 返回
-        </button>
-        <span class="nav-divider">|</span>
-        <h1 class="theme-title">{{ themeLabel }}</h1>
-      </div>
+      <h1 class="theme-title">{{ themeLabel }}</h1>
     </header>
 
     <section class="type-filter-bar">
@@ -58,6 +59,7 @@ import { useDataStore } from '../stores/dataStore'
 import { useAppStore } from '../stores/appStore'
 import { useStaticPath } from '../composables/useStaticPath'
 import { useDragScroll } from '../composables/useDragScroll'
+import TopNavBar from '../components/TopNavBar.vue'
 import MaterialCard from '../components/MaterialCard.vue'
 
 const route = useRoute()
@@ -117,6 +119,10 @@ function goBack() {
   router.push('/dashboard')
 }
 
+function goHome() {
+  router.push('/')
+}
+
 function goToDetail(id: string) {
   if (hasMoved.value) {
     hasMoved.reset()
@@ -138,16 +144,7 @@ function goToDetail(id: string) {
   background: rgba(0, 0, 0, 0.25);
 }
 .theme-list > * { position: relative; z-index: 1; }
-.theme-list-header { padding: 40px 80px 16px; flex-shrink: 0; }
-.back-nav { display: flex; align-items: center; }
-.back-btn {
-  background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.15);
-  border-radius: 8px; color: #ffffff; font-size: 18px; padding: 8px 20px; cursor: pointer;
-  display: flex; align-items: center; gap: 8px; transition: all 0.2s ease;
-}
-.back-btn:hover { background: rgba(255, 255, 255, 0.15); border-color: rgba(255, 255, 255, 0.3); }
-.back-btn:active { transform: scale(0.96); background: rgba(255, 255, 255, 0.2); }
-.nav-divider { color: rgba(255, 255, 255, 0.2); margin: 0 24px; font-size: 24px; font-weight: 300; }
+.theme-list-header { padding: 50px 80px 16px; flex-shrink: 0; }
 .theme-title { font-family: var(--font-serif), serif; font-size: 36px; font-weight: 500; color: #d1e2ff; letter-spacing: 2px; margin: 0; }
 
 .type-filter-bar { display: flex; align-items: center; flex-shrink: 0; padding: 0 80px; margin-bottom: 16px; }

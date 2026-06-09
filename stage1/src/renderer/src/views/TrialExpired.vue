@@ -1,16 +1,19 @@
 <template>
   <div class="trial-expired">
+    <TopNavBar :show-exit="true" :exit-action="handleExit" />
+
     <div class="trial-overlay">
       <div class="trial-content">
         <h1>试用版已到期</h1>
         <p>当前为试用版，如需正常使用请联系开发人员获取正式版</p>
-        <button class="exit-btn" @click="handleExit">退出程序</button>
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
+import TopNavBar from '../components/TopNavBar.vue'
+
 function handleExit() {
   window.electronAPI.closeApp()
 }
@@ -55,22 +58,5 @@ function handleExit() {
   line-height: 1.6;
   letter-spacing: 2px;
   color: rgba(255, 255, 255, 0.8);
-}
-
-.exit-btn {
-  margin-top: 48px;
-  padding: 16px 48px;
-  font-size: 22px;
-  letter-spacing: 2px;
-  color: #0a0a0a;
-  background: var(--color-accent, #c8a45c);
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: opacity 0.2s;
-}
-
-.exit-btn:active {
-  opacity: 0.7;
 }
 </style>

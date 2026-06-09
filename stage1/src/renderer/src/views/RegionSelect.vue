@@ -1,12 +1,9 @@
 <template>
   <div class="region-select">
+    <TopNavBar :show-exit="true" :exit-action="goHome" />
+
     <header class="region-header">
-      <button class="back-btn" @click="goBack">
-        <span class="back-arrow">&#8592;</span>
-        <span>返回</span>
-      </button>
       <h1>选择地区</h1>
-      <div class="header-placeholder"></div>
     </header>
 
     <div class="city-tabs-wrapper">
@@ -43,6 +40,7 @@ import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAppStore } from '../stores/appStore'
 import { regions, ACTIVE_REGION } from '../data/regions'
+import TopNavBar from '../components/TopNavBar.vue'
 
 const router = useRouter()
 const appStore = useAppStore()
@@ -72,7 +70,7 @@ function selectDistrict(district: string) {
   router.push('/dashboard')
 }
 
-function goBack() {
+function goHome() {
   router.push('/')
 }
 </script>
@@ -91,10 +89,9 @@ function goBack() {
   height: 100px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 0 60px;
+  justify-content: center;
   flex-shrink: 0;
-  padding-top: 2vh;
+  padding-top: 50px;
 }
 
 .region-header h1 {
@@ -103,34 +100,6 @@ function goBack() {
   font-weight: 600;
   letter-spacing: 4px;
   color: var(--color-text);
-}
-
-.back-btn {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  background: var(--color-card-bg);
-  border: 1px solid var(--color-card-border);
-  border-radius: var(--radius-sm);
-  color: var(--color-text);
-  font-size: 16px;
-  padding: 10px 20px;
-  cursor: pointer;
-  transition: all var(--transition-fast);
-  font-family: var(--font-sans);
-}
-
-.back-btn:hover,
-.back-btn:active {
-  background: rgba(255, 255, 255, 0.12);
-}
-
-.back-arrow {
-  font-size: 18px;
-}
-
-.header-placeholder {
-  width: 100px;
 }
 
 .city-tabs-wrapper {

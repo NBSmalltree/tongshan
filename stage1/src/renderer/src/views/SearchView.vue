@@ -1,14 +1,15 @@
 <template>
   <div class="search-page">
+    <TopNavBar
+      :show-back="true"
+      :show-exit="true"
+      :back-action="goBack"
+      :exit-action="goHome"
+    />
+
     <header class="search-header">
-      <div class="back-nav">
-        <button class="back-btn" @click="goBack">
-          <span class="arrow">←</span> 返回
-        </button>
-        <span class="nav-divider">|</span>
-        <h1 class="page-title">在地文化数字共创平台</h1>
-      </div>
-      
+      <h1 class="page-title">在地文化数字共创平台</h1>
+
       <div class="search-box-trigger" @click="openKeyboard">
         <span class="search-icon">🔍</span>
         <input
@@ -82,6 +83,7 @@ import { useRouter } from 'vue-router'
 import { useDataStore } from '../stores/dataStore'
 import { useAppStore } from '../stores/appStore'
 import { useDragScroll } from '../composables/useDragScroll'
+import TopNavBar from '../components/TopNavBar.vue'
 import MaterialCard from '../components/MaterialCard.vue'
 import VirtualKeyboard from '../components/VirtualKeyboard.vue'
 import SearchResults from '../components/SearchResults.vue'
@@ -177,6 +179,11 @@ function goBack() {
   router.back()
 }
 
+function goHome() {
+  appStore.clearSearch()
+  router.push('/')
+}
+
 function goToDetail(id: string) {
   if (hasMoved.value) {
     hasMoved.reset()
@@ -207,36 +214,13 @@ function goToDetail(id: string) {
   align-items: center;
   flex-shrink: 0;
   margin-bottom: 40px;
-}
-
-.back-nav {
-  display: flex;
-  align-items: center;
-}
-
-.back-btn {
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  border-radius: 8px;
-  color: #ffffff;
-  font-size: 18px;
-  padding: 8px 20px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.nav-divider {
-  color: rgba(255, 255, 255, 0.2);
-  margin: 0 24px;
-  font-size: 24px;
+  padding-top: 50px;
 }
 
 .page-title {
   font-family: 'Noto Serif SC', serif;
   font-size: 32px;
-  color: #efbf73; /* Ancient Gold */
+  color: #efbf73;
   letter-spacing: 2px;
   margin: 0;
 }
