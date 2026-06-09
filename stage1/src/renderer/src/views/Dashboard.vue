@@ -96,7 +96,7 @@ function goToRegion() {
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  padding-top: 3vh;
+  padding-top: 6vh;
 }
 
 .dashboard-header h1 {
