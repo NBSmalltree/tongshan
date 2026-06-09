@@ -47,6 +47,7 @@ html, body {
   -webkit-user-select: none;
   -webkit-user-drag: none;
   -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
   cursor: default;
 }
 
@@ -96,6 +97,10 @@ a {
 }
 .bottom-search-trigger-bar:hover {
   background: rgba(0, 0, 0, 0.4);
+}
+.bottom-search-trigger-bar:active {
+  background: rgba(0, 0, 0, 0.5);
+  transition-duration: 0.05s;
 }
 .bottom-search-trigger-bar .trigger-inner {
   display: flex;

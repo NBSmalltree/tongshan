@@ -91,6 +91,11 @@ function handleDownload() {
   box-shadow: var(--shadow-card-hover);
 }
 
+.material-card:active {
+  transform: scale(0.98);
+  transition-duration: 0.1s;
+}
+
 .material-card-overlay {
   position: absolute;
   inset: 0;
@@ -163,8 +168,8 @@ function handleDownload() {
 }
 
 .download-btn {
-  width: 36px;
-  height: 36px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
   border: none;
   background: rgba(255, 255, 255, 0.15);
@@ -175,9 +180,11 @@ function handleDownload() {
   justify-content: center;
   cursor: pointer;
   transition: all 0.2s ease;
+  touch-action: manipulation;
 }
 
-.download-btn:hover {
+.download-btn:hover,
+.download-btn:active {
   background: var(--color-accent);
   color: var(--color-primary);
   transform: scale(1.1);

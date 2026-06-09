@@ -39,40 +39,23 @@
       </div>
     </section>
 
-    <main class="search-results-content">
-      <div class="swiper-container" v-if="filteredMaterials.length > 0">
-        <button class="nav-arrow left-arrow" @click="scrollSwiper('left')" v-show="canScrollLeft">
-          <svg viewBox="0 0 24 24" width="26" height="26"><path d="M15.41 16.59L10.83 12l4.58-4.59L14 6l-6 6 6 6 1.41-1.41z" fill="currentColor"/></svg>
-        </button>
-
-        <div 
-          class="materials-swiper" 
-          ref="swiperRef" 
-          @scroll="updateScrollState"
-          @pointerdown="handlePointerDown"
-          @pointermove="handlePointerMove"
-          @pointerup="handlePointerUp"
-          @pointercancel="handlePointerUp"
-          :style="swiperStyle"
-        >
-          <MaterialCard
-            v-for="item in filteredMaterials"
-            :key="item.id"
-            :material="item"
-            class="swiper-card"
-            @click="goToDetail(item.id)"
-          />
-        </div>
-
-        <button class="nav-arrow right-arrow" @click="scrollSwiper('right')" v-show="canScrollRight">
-          <svg viewBox="0 0 24 24" width="26" height="26"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z" fill="currentColor"/></svg>
-        </button>
-      </div>
-
-      <div class="swiper-indicator-wrapper" v-if="filteredMaterials.length > 0">
-        <div class="swiper-indicator-track">
-          <div class="swiper-indicator-bar" :style="indicatorStyle"></div>
-        </div>
+    <main class="search-results-content" ref="scrollRef">
+      <div class="materials-grid" ref="gridRef" v-if="filteredMaterials.length > 0"
+        @touchstart="onTouchStart"
+        @touchmove="onTouchMove"
+        @touchend="onTouchEnd"
+        @pointerdown="onPointerDown"
+        @pointermove="onPointerMove"
+        @pointerup="onPointerUp"
+        @pointercancel="onPointerUp"
+      >
+        <MaterialCard
+          v-for="item in filteredMaterials"
+          :key="item.id"
+          :material="item"
+          class="grid-card"
+          @click="goToDetail(item.id)"
+        />
       </div>
 
       <div v-else class="empty-state">
@@ -94,7 +77,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, computed, onMounted, nextTick, onUnmounted } from 'vue'
+import { ref, reactive, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useDataStore } from '../stores/dataStore'
 import { useAppStore } from '../stores/appStore'
@@ -105,6 +88,64 @@ import SearchResults from '../components/SearchResults.vue'
 const router = useRouter()
 const dataStore = useDataStore()
 const appStore = useAppStore()
+const gridRef = ref<HTMLElement | null>(null)
+const scrollRef = ref<HTMLElement | null>(null)
+
+// 纵向拖拽滚动
+let isDragging = false
+let hasMoved = false
+let startY = 0
+let startScrollTop = 0
+const SCROLL_THRESHOLD = 8
+
+function getScrollContainer(): HTMLElement | null {
+  return scrollRef.value || gridRef.value?.parentElement as HTMLElement
+}
+
+function onPointerDown(e: PointerEvent) {
+  if (e.button !== 0) return
+  const container = getScrollContainer()
+  if (!container) return
+  isDragging = true
+  hasMoved = false
+  startY = e.clientY
+  startScrollTop = container.scrollTop
+}
+
+function onPointerMove(e: PointerEvent) {
+  if (!isDragging) return
+  const container = getScrollContainer()
+  if (!container) return
+  const deltaY = startY - e.clientY
+  if (Math.abs(deltaY) > SCROLL_THRESHOLD) hasMoved = true
+  container.scrollTop = startScrollTop + deltaY
+}
+
+function onPointerUp() {
+  isDragging = false
+}
+
+function onTouchStart(e: TouchEvent) {
+  const container = getScrollContainer()
+  if (!container) return
+  isDragging = true
+  hasMoved = false
+  startY = e.touches[0].clientY
+  startScrollTop = container.scrollTop
+}
+
+function onTouchMove(e: TouchEvent) {
+  if (!isDragging) return
+  const container = getScrollContainer()
+  if (!container) return
+  const deltaY = startY - e.touches[0].clientY
+  if (Math.abs(deltaY) > SCROLL_THRESHOLD) hasMoved = true
+  container.scrollTop = startScrollTop + deltaY
+}
+
+function onTouchEnd() {
+  isDragging = false
+}
 
 // 1. 分类数据定义
 const filterGroups = {
@@ -129,13 +170,10 @@ function categoryLabel(cat: string) {
 
 function toggleFilter(category: string, tag: string) {
   if (activeFilters[category] === tag) {
-    activeFilters[category] = '' // 反选
+    activeFilters[category] = ''
   } else {
     activeFilters[category] = tag
   }
-  nextTick(() => {
-    calculateScrollBounds()
-  })
 }
 
 // 2. 核心多维联动过滤逻辑 (结合标签筛选与输入框输入)
@@ -167,121 +205,11 @@ function fileTypeMap(label: string) {
   return map[label] || label
 }
 
-// 3. 轮播与拖拽核心状态（完美复刻原 ThemeList 物理特性）
-const swiperRef = ref<HTMLElement | null>(null)
-const scrollLeft = ref(0)
-const maxScrollLeft = ref(0)
-const clientWidth = ref(0)
-const scrollWidth = ref(0)
-const isDragging = ref(false)
-let startX = 0
-let startScrollLeft = 0
-const rubberOffset = ref(0)
-
 onMounted(async () => {
   await dataStore.loadData()
-  window.addEventListener('resize', calculateScrollBounds)
-  nextTick(() => {
-    calculateScrollBounds()
-  })
 })
 
-onUnmounted(() => {
-  window.removeEventListener('resize', calculateScrollBounds)
-})
-
-const canScrollLeft = computed(() => maxScrollLeft.value > 0 && scrollLeft.value > 5)
-const canScrollRight = computed(() => maxScrollLeft.value > 0 && scrollLeft.value < maxScrollLeft.value - 5)
-
-const swiperStyle = computed(() => ({
-  transform: `translateX(${rubberOffset.value}px)`,
-  transition: isDragging.value ? 'none' : 'transform 0.4s cubic-bezier(0.25, 1, 0.5, 1)'
-}))
-
-const indicatorStyle = computed(() => {
-  const trackWidth = 160 
-  if (maxScrollLeft.value <= 0 || !scrollWidth.value) {
-    const shrinkAmount = Math.abs(rubberOffset.value) * 0.4
-    const width = Math.max(40, trackWidth - shrinkAmount)
-    const tx = rubberOffset.value > 0 ? rubberOffset.value * 0.15 : (trackWidth - width) + rubberOffset.value * 0.15
-    return {
-      width: `${width}px`,
-      transform: `translateX(${tx}px)`,
-      transition: isDragging.value ? 'none' : 'all 0.4s cubic-bezier(0.25, 1, 0.5, 1)'
-    }
-  }
-  const barWidth = Math.max(32, (clientWidth.value / scrollWidth.value) * trackWidth)
-  const remainingTrack = trackWidth - barWidth
-  const baseTx = (scrollLeft.value / maxScrollLeft.value) * remainingTrack
-  const finalTx = baseTx - (rubberOffset.value * 0.1)
-  return {
-    width: `${barWidth}px`,
-    transform: `translateX(${finalTx}px)`,
-    transition: isDragging.value ? 'none' : 'transform 0.1s linear'
-  }
-})
-
-function calculateScrollBounds() {
-  if (swiperRef.value) {
-    scrollLeft.value = swiperRef.value.scrollLeft
-    maxScrollLeft.value = swiperRef.value.scrollWidth - swiperRef.value.clientWidth
-    clientWidth.value = swiperRef.value.clientWidth
-    scrollWidth.value = swiperRef.value.scrollWidth
-  }
-}
-
-function updateScrollState(e: Event) {
-  scrollLeft.value = (e.target as HTMLElement).scrollLeft
-}
-
-// 4. 指针拖拽处理器
-function handlePointerDown(e: PointerEvent) {
-  if (!swiperRef.value) return
-  isDragging.value = true
-  startX = e.clientX
-  startScrollLeft = swiperRef.value.scrollLeft
-  swiperRef.value.style.scrollBehavior = 'auto'
-}
-
-function handlePointerMove(e: PointerEvent) {
-  if (!isDragging.value || !swiperRef.value) return
-  swiperRef.value.setPointerCapture(e.pointerId)
-  const deltaX = e.clientX - startX
-
-  if (maxScrollLeft.value > 0) {
-    const targetScroll = startScrollLeft - deltaX
-    if (targetScroll < 0) {
-      swiperRef.value.scrollLeft = 0
-      rubberOffset.value = -targetScroll * 0.25
-    } else if (targetScroll > maxScrollLeft.value) {
-      swiperRef.value.scrollLeft = maxScrollLeft.value
-      rubberOffset.value = (maxScrollLeft.value - targetScroll) * 0.25
-    } else {
-      swiperRef.value.scrollLeft = targetScroll
-      rubberOffset.value = 0
-    }
-  } else {
-    rubberOffset.value = deltaX * 0.35 
-  }
-}
-
-function handlePointerUp(e: PointerEvent) {
-  if (!isDragging.value || !swiperRef.value) return
-  isDragging.value = false
-  swiperRef.value.releasePointerCapture(e.pointerId)
-  rubberOffset.value = 0
-  swiperRef.value.style.scrollBehavior = 'smooth'
-  setTimeout(calculateScrollBounds, 400)
-}
-
-function scrollSwiper(direction: 'left' | 'right') {
-  if (!swiperRef.value) return
-  const scrollAmount = swiperRef.value.clientWidth * 0.75
-  swiperRef.value.scrollBy({ left: direction === 'left' ? -scrollAmount : scrollAmount, behavior: 'smooth' })
-  setTimeout(calculateScrollBounds, 400)
-}
-
-// 5. 键盘与搜索框功能
+// 4. 键盘与搜索框功能
 function openKeyboard() { appStore.toggleKeyboard(true) }
 function closeKeyboard() { appStore.toggleKeyboard(false) }
 function clearSearch() { appStore.clearSearch() }
@@ -298,6 +226,10 @@ function goBack() {
 }
 
 function goToDetail(id: string) {
+  if (hasMoved) {
+    hasMoved = false
+    return
+  }
   appStore.clearSearch()
   router.push(`/detail/${id}`)
 }
@@ -422,79 +354,52 @@ function goToDetail(id: string) {
   border: 1px solid rgba(255, 255, 255, 0.15);
   color: rgba(255, 255, 255, 0.7);
   padding: 6px 20px;
-  border-radius: 20px; /* Pill-shaped */
+  border-radius: 20px;
   font-size: 15px;
   cursor: pointer;
   transition: all 0.25s ease;
+  touch-action: manipulation;
 }
 
 .filter-capsule.active {
-  border-color: #e8b86d; /* Gold border */
-  color: #ffd598; /* Gold text */
-  background: rgba(232, 184, 109, 0.15); /* Soft gold tint */
+  border-color: #e8b86d;
+  color: #ffd598;
+  background: rgba(232, 184, 109, 0.15);
   box-shadow: 0 0 12px rgba(232, 184, 109, 0.3);
+}
+
+.filter-capsule:active {
+  transform: scale(0.95);
+  background: rgba(255, 255, 255, 0.1);
 }
 
 /* 结果区展示 */
 .search-results-content {
   flex: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  position: relative;
-  overflow: hidden;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255,255,255,0.2) transparent;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  touch-action: pan-y;
+}
+.search-results-content::-webkit-scrollbar { width: 6px; }
+.search-results-content::-webkit-scrollbar-track { background: transparent; }
+.search-results-content::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 3px; }
+
+.materials-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 28px;
+  touch-action: none;
 }
 
-.swiper-container {
-  position: relative;
-  width: 100%;
-  display: flex;
-  align-items: center;
-}
-
-.materials-swiper {
-  display: flex;
-  gap: 40px;
-  width: 100%;
-  overflow-x: auto;
-  padding: 10px 0;
-  scrollbar-width: none;
-}
-.materials-swiper::-webkit-scrollbar { display: none; }
-
-.nav-arrow {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 56px;
-  height: 56px;
-  border-radius: 50%;
-  background: rgba(15, 18, 32, 0.8);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  color: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+:deep(.grid-card) {
+  border-radius: 16px !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
   cursor: pointer;
-  z-index: 10;
 }
-.left-arrow { left: -20px; }
-.right-arrow { right: -20px; }
-
-:deep(.swiper-card) {
-  flex: 0 0 320px !important;
-  height: 440px !important;
-  border-radius: 20px !important;
-}
-
-/* 底部滚动条组件 */
-.swiper-indicator-wrapper {
-  display: flex;
-  justify-content: center;
-  margin-top: 20px;
-}
-.swiper-indicator-track { width: 160px; height: 4px; background: rgba(255, 255, 255, 0.12); border-radius: 2px; position: relative; overflow: hidden; }
-.swiper-indicator-bar { height: 100%; background: rgba(255, 255, 255, 0.75); border-radius: 2px; position: absolute; left: 0; top: 0; will-change: transform, width; }
 
 .empty-state {
   display: flex;
