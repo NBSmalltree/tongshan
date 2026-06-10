@@ -1,11 +1,12 @@
 <template>
   <div class="search-page">
-    <TopNavBar
-      :show-exit="true"
-      :exit-action="goBack"
-    />
-
     <header class="search-header">
+      <button class="back-circle" @click="goBack" title="返回">
+        <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/>
+          <path d="M14 16l-4-4 4-4"/>
+        </svg>
+      </button>
       <h1 class="page-title">在地文化数字共创平台</h1>
 
       <div class="search-box-trigger" @click="openKeyboard">
@@ -81,7 +82,6 @@ import { useRouter } from 'vue-router'
 import { useDataStore } from '../stores/dataStore'
 import { useAppStore } from '../stores/appStore'
 import { useDragScroll } from '../composables/useDragScroll'
-import TopNavBar from '../components/TopNavBar.vue'
 import MaterialCard from '../components/MaterialCard.vue'
 import VirtualKeyboard from '../components/VirtualKeyboard.vue'
 import SearchResults from '../components/SearchResults.vue'
@@ -203,10 +203,31 @@ function goToDetail(id: string) {
 /* 头部样式 */
 .search-header {
   display: flex;
-  justify-content: space-between;
   align-items: center;
   flex-shrink: 0;
   margin-bottom: 40px;
+  gap: 16px;
+}
+
+.back-circle {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+  touch-action: manipulation;
+}
+
+.back-circle:active {
+  background: rgba(255, 255, 255, 0.2);
+  transform: scale(0.9);
 }
 
 .page-title {
@@ -229,6 +250,8 @@ function goToDetail(id: string) {
   padding: 0 20px;
   cursor: pointer;
   touch-action: manipulation;
+  margin-left: auto;
+  flex-shrink: 0;
 }
 
 .search-icon { margin-right: 12px; font-size: 18px; }

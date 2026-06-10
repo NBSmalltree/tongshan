@@ -1,11 +1,12 @@
 <template>
   <div class="theme-list" :style="{ backgroundImage: bgUrl ? `url(${bgUrl})` : '' }">
-    <TopNavBar
-      :show-exit="true"
-      :exit-action="goBack"
-    />
-
     <header class="theme-list-header">
+      <button class="back-circle" @click="goBack" title="返回">
+        <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/>
+          <path d="M14 16l-4-4 4-4"/>
+        </svg>
+      </button>
       <h1 class="theme-title">{{ themeLabel }}</h1>
     </header>
 
@@ -57,7 +58,6 @@ import { useDataStore } from '../stores/dataStore'
 import { useAppStore } from '../stores/appStore'
 import { useStaticPath } from '../composables/useStaticPath'
 import { useDragScroll } from '../composables/useDragScroll'
-import TopNavBar from '../components/TopNavBar.vue'
 import MaterialCard from '../components/MaterialCard.vue'
 
 const route = useRoute()
@@ -138,8 +138,29 @@ function goToDetail(id: string) {
   background: rgba(0, 0, 0, 0.25);
 }
 .theme-list > * { position: relative; z-index: 1; }
-.theme-list-header { padding: 40px 80px 16px; flex-shrink: 0; }
+.theme-list-header { padding: 40px 80px 16px; flex-shrink: 0; display: flex; align-items: center; gap: 16px; }
 .theme-title { font-family: var(--font-serif), serif; font-size: 36px; font-weight: 500; color: #d1e2ff; letter-spacing: 2px; margin: 0; }
+
+.back-circle {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+  touch-action: manipulation;
+}
+
+.back-circle:active {
+  background: rgba(255, 255, 255, 0.2);
+  transform: scale(0.9);
+}
 
 .type-filter-bar { display: flex; align-items: center; flex-shrink: 0; padding: 0 80px; margin-bottom: 16px; }
 .filter-label { font-size: 16px; color: rgba(255, 255, 255, 0.4); font-family: var(--font-sans); margin-right: 20px; white-space: nowrap; }
