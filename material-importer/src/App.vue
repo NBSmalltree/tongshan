@@ -13,7 +13,7 @@ interface Theme {
   name: string;
   label: string;
   background: string;
-  pageBackground?: string;
+  pageBackground: string;
   description: string;
   visible?: boolean;
 }
