@@ -1,8 +1,8 @@
 <template>
   <div class="theme-list" :style="{ backgroundImage: bgUrl ? `url(${bgUrl})` : '' }">
     <TopNavBar
-      :show-back="true"
-      :back-action="goBack"
+      :show-exit="true"
+      :exit-action="goBack"
     />
 
     <header class="theme-list-header">
