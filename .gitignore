@@ -1,5 +1,6 @@
 # 编译产物
 stage1/dist-release/
+*.tsbuildinfo
 
 # 构建输出
 stage1/out/
