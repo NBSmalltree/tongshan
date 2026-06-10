@@ -48,14 +48,13 @@ function handleExit() {
 
 <style scoped>
 .top-nav-bar {
-  position: fixed;
-  top: 0;
-  left: 0;
+  position: absolute;
+  top: 16px;
+  left: 40px;
   z-index: 500;
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 16px 40px;
 }
 
 /* 带文字的按钮（返回） */

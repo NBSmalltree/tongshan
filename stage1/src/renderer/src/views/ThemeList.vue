@@ -138,7 +138,7 @@ function goToDetail(id: string) {
   background: rgba(0, 0, 0, 0.25);
 }
 .theme-list > * { position: relative; z-index: 1; }
-.theme-list-header { padding: 50px 80px 16px; flex-shrink: 0; }
+.theme-list-header { padding: 40px 80px 16px; flex-shrink: 0; }
 .theme-title { font-family: var(--font-serif), serif; font-size: 36px; font-weight: 500; color: #d1e2ff; letter-spacing: 2px; margin: 0; }
 
 .type-filter-bar { display: flex; align-items: center; flex-shrink: 0; padding: 0 80px; margin-bottom: 16px; }

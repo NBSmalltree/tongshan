@@ -207,7 +207,6 @@ function goToDetail(id: string) {
   align-items: center;
   flex-shrink: 0;
   margin-bottom: 40px;
-  padding-top: 50px;
 }
 
 .page-title {
