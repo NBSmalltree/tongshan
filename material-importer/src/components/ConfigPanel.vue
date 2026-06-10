@@ -14,7 +14,7 @@ defineProps<{
   selectedTheme: string;
   themes: ThemeWithCount[];
   loading: boolean;
-  activeTab: "material" | "welcome" | "theme" | "manage";
+  activeTab: "material" | "welcome" | "theme" | "dashboard" | "manage";
 }>();
 
 const emit = defineEmits<{
@@ -24,7 +24,7 @@ const emit = defineEmits<{
   "update:selectedTheme": [value: string];
   "load-data": [];
   "scan": [];
-  "update:activeTab": [value: "material" | "welcome" | "theme" | "manage"];
+  "update:activeTab": [value: "material" | "welcome" | "theme" | "dashboard" | "manage"];
 }>();
 
 async function browseResourcesDir() {
@@ -79,6 +79,13 @@ async function browseSourceFolder() {
       </button>
       <button
         class="tab-btn"
+        :class="{ active: activeTab === 'manage' }"
+        @click="emit('update:activeTab', 'manage')"
+      >
+        素材管理
+      </button>
+      <button
+        class="tab-btn"
         :class="{ active: activeTab === 'welcome' }"
         @click="emit('update:activeTab', 'welcome')"
       >
@@ -86,17 +93,17 @@ async function browseSourceFolder() {
       </button>
       <button
         class="tab-btn"
+        :class="{ active: activeTab === 'dashboard' }"
+        @click="emit('update:activeTab', 'dashboard')"
+      >
+        城市页背景
+      </button>
+      <button
+        class="tab-btn"
         :class="{ active: activeTab === 'theme' }"
         @click="emit('update:activeTab', 'theme')"
       >
         专题图片
-      </button>
-      <button
-        class="tab-btn"
-        :class="{ active: activeTab === 'manage' }"
-        @click="emit('update:activeTab', 'manage')"
-      >
-        素材管理
       </button>
     </div>
 

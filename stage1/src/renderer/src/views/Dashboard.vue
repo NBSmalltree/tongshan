@@ -49,13 +49,24 @@ const appStore = useAppStore()
 const { resolveAssetUrl } = useStaticPath()
 const bgUrl = ref('')
 
+const defaultBgPath = 'images/background/bg1.png'
+
 onMounted(async () => {
   if (!appStore.selectedDistrict) {
     router.replace('/region')
     return
   }
   await dataStore.reloadData()
-  bgUrl.value = await resolveAssetUrl('images/background/bg1.png')
+
+  let bgPath = defaultBgPath
+  try {
+    const config = await window.electronAPI.readConfigJson()
+    const districtBg = config?.dashboardBackgrounds?.[appStore.selectedDistrict]
+    if (districtBg) {
+      bgPath = districtBg
+    }
+  } catch {}
+  bgUrl.value = await resolveAssetUrl(bgPath)
 })
 
 const themes = computed(() => dataStore.themes.filter(t => t.visible !== false))
@@ -91,6 +102,21 @@ function goToRegion() {
   background-size: cover;
   background-position: center;
   background-color: #0b0d19; /* 保证暗色底色与 ThemeList 一致 */
+  position: relative;
+}
+
+.dashboard::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  backdrop-filter: blur(6px) brightness(0.65);
+  background: rgba(0, 0, 0, 0.25);
+}
+
+.dashboard > * {
+  position: relative;
+  z-index: 1;
 }
 
 .dashboard-header {

@@ -7,6 +7,7 @@ import PreviewTable from "./components/PreviewTable.vue";
 import WelcomePanel from "./components/WelcomePanel.vue";
 import ThemePanel from "./components/ThemePanel.vue";
 import MaterialPanel from "./components/MaterialPanel.vue";
+import DashboardPanel from "./components/DashboardPanel.vue";
 
 interface Theme {
   name: string;
@@ -71,7 +72,7 @@ const resourcesDir = ref("");
 const sourceFolderPath = ref("");
 const prefix = ref("");
 const selectedTheme = ref("");
-const activeTab = ref<"material" | "welcome" | "theme" | "manage">("material");
+const activeTab = ref<"material" | "welcome" | "theme" | "dashboard" | "manage">("material");
 const data = ref<DataJson | null>(null);
 const themesWithCount = ref<ThemeWithCount[]>([]);
 const prefixStats = ref<PrefixInfo[]>([]);
@@ -313,6 +314,14 @@ async function handleImport() {
       @update:loading="loading = $event"
       @status-msg="statusMsg = $event"
       @data-updated="onThemeDataUpdated"
+    />
+
+    <DashboardPanel
+      v-else-if="activeTab === 'dashboard'"
+      :resourcesDir="resourcesDir"
+      :loading="loading"
+      @update:loading="loading = $event"
+      @status-msg="statusMsg = $event"
     />
 
     <MaterialPanel

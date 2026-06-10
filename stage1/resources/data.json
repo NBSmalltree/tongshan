@@ -2,10 +2,10 @@
   "themes": [
     {
       "name": "shuimitao",
-      "label": "水蜜桃",
+      "label": "桃文化",
       "background": "images/themes/shuimitao-card.jpg",
       "pageBackground": "images/themes/shuimitao-page.jpg",
-      "description": "奉化水蜜桃，千年桃乡的甜蜜传承"
+      "description": "奉化桃文化，千年桃乡的甜蜜传承"
     },
     {
       "name": "mile",

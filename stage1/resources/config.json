@@ -1,4 +1,7 @@
 {
+  "dashboardBackgrounds": {
+    "奉化": "images/background/水蜜桃.jpg"
+  },
   "fullscreen": true,
   "kiosk": false,
   "resolution": "1920x1080",

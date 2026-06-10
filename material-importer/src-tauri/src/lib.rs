@@ -450,6 +450,57 @@ fn import_welcome_images(target_dir: String, source_files: Vec<String>) -> Resul
     Ok(imported)
 }
 
+// ── Dashboard Background Commands ────────────────────────────────────────────
+
+#[tauri::command]
+fn import_dashboard_background(source_file: String, target_dir: String) -> Result<String, String> {
+    let dest = Path::new(&target_dir);
+    fs::create_dir_all(dest).map_err(|e| format!("创建目录失败: {}", e))?;
+
+    let src = Path::new(&source_file);
+    let fname = src
+        .file_name()
+        .ok_or_else(|| format!("无法获取文件名: {}", source_file))?;
+    let target = dest.join(fname);
+
+    fs::copy(src, &target).map_err(|e| format!("复制文件失败 {}: {}", source_file, e))?;
+
+    Ok(fname.to_string_lossy().to_string())
+}
+
+#[tauri::command]
+fn update_dashboard_backgrounds(
+    config_path: String,
+    backgrounds: std::collections::HashMap<String, String>,
+) -> Result<serde_json::Value, String> {
+    let path = Path::new(&config_path);
+
+    let mut config: serde_json::Value = if path.exists() {
+        let content = fs::read_to_string(path).map_err(|e| format!("读取 config.json 失败: {}", e))?;
+        serde_json::from_str(&content).map_err(|e| format!("解析 config.json 失败: {}", e))?
+    } else {
+        serde_json::json!({})
+    };
+
+    // 构建 dashboardBackgrounds 映射：城市名 → "images/background/{filename}"
+    let bg_map: serde_json::Map<String, serde_json::Value> = backgrounds
+        .iter()
+        .map(|(city, filename)| {
+            (
+                city.clone(),
+                serde_json::Value::String(format!("images/background/{}", filename)),
+            )
+        })
+        .collect();
+
+    config["dashboardBackgrounds"] = serde_json::Value::Object(bg_map);
+
+    let json = serde_json::to_string_pretty(&config).map_err(|e| format!("序列化失败: {}", e))?;
+    fs::write(path, json).map_err(|e| format!("写入 config.json 失败: {}", e))?;
+
+    Ok(config)
+}
+
 // ── Theme Image Commands ─────────────────────────────────────────────────────
 
 #[tauri::command]
@@ -740,6 +791,8 @@ pub fn run() {
             load_config_json,
             update_welcome_images,
             import_welcome_images,
+            import_dashboard_background,
+            update_dashboard_backgrounds,
             update_theme_image,
             import_theme_images,
             update_material,
